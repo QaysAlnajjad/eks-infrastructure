@@ -1,0 +1,21 @@
+{
+  "title": "Flask App Metrics",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Request Rate",
+      "targets": [
+        {
+          "expr": "rate(flask_http_requests_total[1m])",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}
