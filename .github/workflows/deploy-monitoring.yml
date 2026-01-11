@@ -34,15 +34,9 @@ jobs:
       # 4. Install Helm
       - name: Install Helm
         uses: azure/setup-helm@v4
-      # 5. Add Prometheus Helm repository
-      - name: Add Helm repo
-        run: |
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-          helm repo update
-
-      # 7. ServiceMonitoring
+      # 5. ServiceMonitoring
       - name: Apply ServiceMonitors
         run: kubectl apply -f k8s/monitoring/servicemonitors/
-      # 8. Apply alerts
+      # 6. Apply alerts
       - name: Apply alert rules
         run: kubectl apply -f k8s/monitoring/alerts/
