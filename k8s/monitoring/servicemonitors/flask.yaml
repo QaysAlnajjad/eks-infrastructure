@@ -11,8 +11,7 @@ spec:
     matchNames:
       - default
   endpoints:
-    - port: http
+    - port: metrics
       path: /metrics
       interval: 15s
-
 
