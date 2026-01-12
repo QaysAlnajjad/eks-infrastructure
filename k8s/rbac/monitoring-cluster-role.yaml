@@ -27,4 +27,4 @@ rules:
       - servicemonitors
       - podmonitors
       - prometheusrules
-    verbs: ["get", "list", "watch", "create", "update"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
