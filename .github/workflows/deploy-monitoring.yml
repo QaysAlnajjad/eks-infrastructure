@@ -36,7 +36,11 @@ jobs:
         uses: azure/setup-helm@v4
       # 5. ServiceMonitoring
       - name: Apply ServiceMonitors
-        run: kubectl apply -f k8s/monitoring/servicemonitors/
+        run: |
+          kubectl delete servicemonitor flask -n monitoring --ignore-not-found
+          kubectl create -f k8s/monitoring/servicemonitors/
       # 6. Apply alerts
       - name: Apply alert rules
-        run: kubectl apply -f k8s/monitoring/alerts/
+        run: 
+          kubectl delete prometheusrule app-latency -n monitoring --ignore-not-found
+          kubectl create -f k8s/monitoring/alerts/
