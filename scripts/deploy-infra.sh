@@ -71,5 +71,12 @@ helm upgrade --install monitoring \
   --create-namespace \
   -f k8s/monitoring/values.yaml
 
+# 9. ServiceMonitoring
+kubectl apply -f k8s/monitoring/servicemonitors/
+
+# 10. Apply alerts
+kubectl apply -f k8s/monitoring/alerts/
+
+
 echo "Infrastructure bootstrap completed"
 kubectl get nodes
