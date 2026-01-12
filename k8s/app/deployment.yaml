@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: flask-app
-          image: qaysalnajjad/kubernetes:v1.4
+          image: qaysalnajjad/kubernetes:v1.5
           imagePullPolicy: Always
 
           ports:
