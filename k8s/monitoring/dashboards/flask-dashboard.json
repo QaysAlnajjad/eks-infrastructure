@@ -8,6 +8,9 @@
         {
           "expr": "sum(rate(app_requests_total[1m]))",
           "refId": "A"
+        },
+        {
+          "expr": "sum by (path) (rate(app_requests_total[1m]))"
         }
       ],
       "datasource": {
@@ -19,5 +22,6 @@
   "schemaVersion": 38,
   "version": 1
 }
+
 
 
