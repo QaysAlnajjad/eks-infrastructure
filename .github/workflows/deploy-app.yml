@@ -36,3 +36,4 @@ jobs:
           kubectl apply -f k8s/app/deployment.yaml
           kubectl apply -f k8s/app/app-service.yaml
           kubectl apply -f k8s/app/ingress.yaml
+          kubectl apply -f k8s/app/metrics-service.yaml
