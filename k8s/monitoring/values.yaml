@@ -32,7 +32,7 @@ alertmanager:
   enabled: true
 
   rbac:
-    create: false
+    create: true
 
   config:
     global:
