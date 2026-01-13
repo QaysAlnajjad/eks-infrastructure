@@ -6,7 +6,7 @@
       "title": "Request Rate",
       "targets": [
         {
-          "expr": "rate(flask_http_requests_total[1m])",
+          "expr": "sum(rate(app_requests_total[1m]))",
           "refId": "A"
         }
       ],
@@ -19,3 +19,5 @@
   "schemaVersion": 38,
   "version": 1
 }
+
+
