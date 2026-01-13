@@ -14,7 +14,7 @@ spec:
               sum by (le) (
                 rate(app_request_duration_seconds_bucket[5m])
               )
-            ) > 1
+            ) > 0.5
           for: 3m
           labels:
             severity: warning
