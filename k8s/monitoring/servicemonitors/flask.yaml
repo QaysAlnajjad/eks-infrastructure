@@ -3,6 +3,8 @@ kind: ServiceMonitor
 metadata:
   name: flask
   namespace: monitoring
+  labels:
+    release: monitoring
 spec:
   selector:
     matchLabels:
