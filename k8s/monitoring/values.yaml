@@ -4,7 +4,7 @@
 namespaceOverride: monitoring
 
 rbac:
-  create: false
+  create: true
 
 # ------------------------
 # Prometheus
@@ -13,7 +13,7 @@ prometheus:
   enabled: true
 
   rbac:
-    create: false
+    create: true
 
   prometheusSpec:
     replicas: 1
