@@ -30,10 +30,13 @@ prometheus:
 # ------------------------
 alertmanager:
   enabled: true
-
+  
   rbac:
     create: true
 
+  alertmanagerSpec:
+    replicas: 1
+    
   config:
     global:
       resolve_timeout: 5m
