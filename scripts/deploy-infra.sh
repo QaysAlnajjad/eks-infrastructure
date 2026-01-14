@@ -29,11 +29,11 @@ aws eks update-kubeconfig \
   --region $AWS_REGION \
   --name $CLUSTER_NAME
 
-# 3. IAM ↔ Kubernetes
-kubectl apply -f k8s/bootstrap/aws-auth.yaml
-
-# 4. Namespaces 
+# 3. Namespaces 
 kubectl apply -f k8s/monitoring/namespace.yaml
+
+# 4. IAM ↔ Kubernetes
+kubectl apply -f k8s/bootstrap/aws-auth.yaml
 
 # 5. RBAC 
 kubectl apply -f k8s/rbac/app-role.yaml
