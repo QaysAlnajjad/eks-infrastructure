@@ -71,6 +71,10 @@ helm upgrade --install monitoring \
   --create-namespace \
   -f k8s/monitoring/values.yaml
 
+# 8.1 Alertmanager routing (CRD-based, production way)
+kubectl apply -f k8s/monitoring/alertmanager-config.yaml
+
+
 # 9. ServiceMonitoring
 kubectl apply -f k8s/monitoring/servicemonitors/
 
