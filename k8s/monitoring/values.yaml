@@ -37,12 +37,6 @@ alertmanager:
     global:
       resolve_timeout: 5m
 
-    route:
-      receiver: default-receiver
-
-    receivers:
-      - name: default-receiver
-
 # ------------------------
 # Grafana
 # ------------------------
