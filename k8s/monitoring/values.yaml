@@ -42,14 +42,10 @@ alertmanager:
       resolve_timeout: 5m
 
     route:
-      receiver: blackhole
-      group_by: ['alertname']
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 4h
+      receiver: default-receiver
 
     receivers:
-      - name: blackhole
+      - name: default-receiver
 
 # ------------------------
 # Grafana
