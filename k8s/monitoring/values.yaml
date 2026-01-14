@@ -20,10 +20,6 @@ prometheus:
     retention: 12h
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
-    alertingEndpoints:
-      - namespace: monitoring
-        name: monitoring-kube-prometheus-alertmanager
-        port: web
 
 # ------------------------
 # Alertmanager
