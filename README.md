@@ -1,376 +1,643 @@
-# Kubernetes Platform on AWS (EKS)
+# Kubernetes Monitoring with Prometheus & Alertmanager
 
 ## Overview
 
-This project demonstrates the design and deployment of a production-style Kubernetes platform on AWS EKS, focusing on:
-  - Infrastructure as Code (Terraform)
-  - Secure CI/CD using GitHub Actions + OIDC
-  - Clear separation of responsibilities (infra / app / monitoring)
-  - Kubernetes-native application deployment
-  - Observability with Prometheus, Alertmanager, and Grafana
-  - Minimal but meaningful alerting focused on user experience
+This project demonstrates a production-style monitoring setup for a Flask application running on Kubernetes (EKS) using:
 
-The goal of this project is architectural clarity and operational correctness, not feature overload.
+  * Prometheus for metrics collection
 
----
+  * Alertmanager for alert delivery
 
-## High-Level Architecture
+  * Grafana for visualization
 
-The platform consists of the following layers:
+  * Prometheus Operator (kube-prometheus-stack)
 
-### AWS Infrastructure
+The focus of the project is application latency monitoring using histograms and alerting based on percentile (P95).
 
-  - VPC with public and private subnets
-  - Internet Gateway + NAT Gateway
-  - EKS Cluster (managed control plane)
-  - EKS Node Group (EC2 worker nodes)
+⚠️ Note: Some values (such as alert thresholds) are intentionally low to force alerts during testing/demo. These values are explained explicitly and should be adjusted in real production environments.
 
-### Kubernetes Platform
+--- 
 
-  - Application deployed via Deployment / Service / Ingress
-  - AWS Load Balancer Controller for ALB integration
-  - RBAC enforcing least privilege
+## Architecture
+```bash
+Client
+  |
+  v
+AWS ALB
+  |
+  v
+app-service (HTTP :80)
+  |
+  v
+Flask Pods
+  ├── App Server (:8080)
+  └── Metrics Server (:9090) ──> metrics-service
+  |                                 |
+  |                                 v
+  |                             Prometheus
+  |                                 |
+  |                                 v
+  |                            Alertmanager
+  |
+  v
+Grafana
 
-### CI/CD
-
-  - GitHub Actions with OIDC (no static credentials)
-  - Separate workflows for infra, app, and monitoring
-
-### Monitoring
-
-  - Prometheus (metrics collection)
-  - Alertmanager (alert routing)
-  - Grafana (visualization)
-  - kube-prometheus-stack via Helm
-
-Prometheus Operator continuously reconciles Prometheus configuration with cluster state, eliminating manual target management and static configuration.
-
----
-
-## CI/CD Design
-
-```text
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-|Workflows           	  |  Responsibility                                |  IAM Role                       |
-|───────────────────────|────────────────────────────────────────────────|─────────────────────────────────|
-|deploy-infra.yml	      |  Provision infrastructure & bootstrap cluster	 |  kubernetes-ci-infra-role       |
-|deploy-app.yml	        |  Deploy application resources	                 |  kubernetes-ci-app-role         |
-|deploy-monitoring.yml  |  Deploy monitoring stack	                     |  kubernetes-ci-monitoring-role  |
-└──────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+Why two Services?
+
+| Service              | Purpose                                             |
+| ---------------------| --------------------------------------------------- |
+| `app-service`        | Serves user traffic via ALB                         |
+| `metrics-service`    | Exposes `/metrics` endpoint **only** for Prometheus |
+
+---
+
+## Application
+
+The application is a simple Flask API that exposes:
+
+  - / – basic endpoint
+
+  - /work?delay=N – simulates work by sleeping N seconds
+
+  - /metrics – Prometheus metrics endpoint
+
+Metrics exposed
+```bash
+Histogram(
+  "app_request_duration_seconds",
+  "Request latency",
+  ["path"]
+)
+```
+This histogram allows Prometheus to compute latency percentiles (P50, P90, P95, …).
+
+---
+
+## Why Histogram?
+
+Percentiles cannot be calculated from averages.
+
+A histogram allows Prometheus to answer questions like:
+
+  * “What is the 95th percentile latency?”
+
+  * “Are a small number of requests extremely slow?”
+
+This project intentionally uses
+
+```bash
+histogram_quantile(
+  0.95,
+  sum by (le) (
+    rate(app_request_duration_seconds_bucket[5m])
+  )
+)
+```
+
+Prometheus cannot calculate percentiles from averages, even if the average looks reasonable.
+
+---
+
+## Alerting
+
+Alert rule
+```bash
+alert: HighRequestLatency
+expr: |
+  histogram_quantile(
+    0.95,
+    sum by (le) (
+      rate(app_request_duration_seconds_bucket[5m])
+    )
+  ) > 0.5
+for: 3m
+```
+Important ⚠️
+
+  * 0.5s threshold is deliberately low
+
+  * Used only for demo/testing
+
+  * In real production, typical values might be:
+
+    - 1.5s
+
+    - 2s
+
+    - or higher depending on SLA
+
+---
+
+## Alertmanager
+
+Alertmanager is fully enabled and configured via Helm values.
+
+Alerts are routed using standard Alertmanager configuration
+
+  * Not disabled
+
+  * Not using null receivers
+
+  * Designed to demonstrate real alert flow
+
+  * The project validates that:
+
+    - Prometheus evaluates rules
+
+    - Alerts fire
+
+    - Alertmanager receives them
+
+---
+
+## Load Testing (Demo)
+
+To trigger alerts:
+```bash
+for i in {1..50}; do
+  curl "http://<ALB>/work?delay=1"
+done
+```
+This generates sustained latency > 0.5s, causing the alert to fire after 3 minutes.
+
+⚠️ Port-Forward Note
+
+During heavy load testing, you may see errors like:
+
+```bash
+portforward.go: Timeout occurred
+```
+This is normal behavior when:
+
+  * Prometheus is under load
+
+  * Many concurrent scrapes occur
+
+It does NOT indicate:
+
+  * Alert failure
+
+  * Prometheus crash
+
+  * Configuration error
+
+---
+
+## Repository Structure
+
+```bash
+├── k8s/
+│   ├── app/
+│   │   ├── deployment.yaml
+│   │   ├── app-service.yaml
+│   │   ├── metrics-service.yaml
+│   │   └── ingress.yaml
+│   ├── monitoring/
+│   │   ├── values.yaml
+│   │   ├── namespace.yaml
+│   │   ├── servicemonitors/
+│   │   │   └── flask.yaml
+│   │   ├── dashboards/
+│   │   └── alerts/
+│   │       ├── alertmanager-config.yaml
+│   │       └── app-alerts.yaml
+│   ├── rbac/
+│   │   ├── app-role.yaml
+│   │   ├── monitoring-cluster-role.yaml
+│   │   ├── monitoring-helm-role.yaml
+│   │   └── rolebinding.yaml
+│   └── bootstrap/
+│       ├── alb-controller-serviceaccount.yaml
+│       └── aws-auth.yaml
+├── terraform/
+└── script/
+    ├── config.sh
+    ├── deploy-infra.sh
+    └── destroy-infra.sh
+```
+
+---
+
+## Deployment & Execution
+
+This project supports two execution modes:
+
+  * Local execution (manual, from your machine)
+
+  * GitHub Actions execution (CI/CD workflows)
+
+Before either mode, you must of course clone the repository.
+
+--- 
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/qaysalnajjad/aws-kubernetes-monitoring.git
+cd aws-kubernetes-monitoring
+```
+
+All paths and commands below assume you are inside the repository root.
+
+---
+
+### Configure AWS Credentials
+
+Authentication is done using IAM Roles (OIDC) via GitHub Actions or locally via AWS CLI.
+
+Locally (example):
+```bash
+aws configure
+```
+Or ensure environment variables are set:
+```bash
+export AWS_REGION=us-east-1
+export CLUSTER_NAME=eks-cluster
+```
+
+---
+
+### Phase 0 — Bootstrap (Required only for GitHub Actions)
+
+This step is required before any GitHub Actions deployment.
+
+Why Bootstrap Exists
+
+Bootstrap is responsible for:
+
+  * Creating the GitHub OIDC provider in AWS
+
+  * Creating IAM roles trusted by GitHub Actions
+
+  * Eliminating the need for AWS access keys in CI/CD
+
+Because bootstrap itself requires AWS credentials, it cannot and must not be executed inside GitHub Actions.
+
+Running it in CI/CD would defeat its purpose and reintroduce secret management.
+
+How Bootstrap Is Executed
+
+Bootstrap is executed locally using Terraform:
+
+```bash
+terraform -chdir=terraform/bootstrap apply
+```
+This step is performed once per AWS account / environment.
+
+After bootstrap is complete:
+
+  * GitHub Actions can securely assume IAM roles via OIDC
+
+  * No AWS secrets are stored in workflows
+
+---
+
+### Option A — Local Deployment
+
+This mode uses local tools and credentials.
+
+Requirements
+
+  * AWS credentials configured locally
+
+  * Installed tools:
+
+    - terraform
+
+    - awscli
+
+    - kubectl
+
+    - helm
+
+Flow
+
+1. Provision infrastructure:
+```bash
+./scripts/deploy-infra.sh
+```
+This script:
+
+  * Creates / verifies Terraform S3 backend
+
+  * Provisions VPC and EKS
+
+  * Configures kubectl access
+
+  * Installs kube-prometheus-stack via Helm
+
+  * Applies ServiceMonitors and PrometheusRules
+
+2. Deploy the application:
+
+```bash
+kubectl apply -f k8s/app/deployment.yaml
+kubectl apply -f k8s/app/app-service.yaml
+kubectl apply -f k8s/app/metrics-service.yaml
+kubectl apply -f k8s/app/ingress.yaml
+```
+Verify pods:
+```bash
+kubectl get pods
+```
+Expected:
+```bash
+    flask-app pods → Running
+```
+This mode is useful for:
+
+  * Development
+
+  * Debugging
+
+  * Learning and experimentation
+
+---
+
+### Option B — GitHub Actions (CI/CD)
+
+This is the recommended execution mode once bootstrap is complete.
+
+Prerequisite
+
+  * Phase 0 (Bootstrap) must already be executed locally
+
+Without bootstrap, all workflows will fail.
+
+Key Characteristics
+
+  * No AWS access keys stored in GitHub
+
+  * Authentication via OIDC + IAM roles
+
+  * No need for terraform / awscli locally
+
+Workflows Overview
+
+| Workflow            | Purpose                     | IAM Role                       |
+| --------------------| ----------------------------|--------------------------------|
+| deploy-infra        | Provision EKS & monitoring  | kubernetes-ci-infra-role       |  
+| deploy-application  | Deploy Flask app            | kubernetes-ci-app-role         |
+| deploy-monitoring   | Deploy Prometheus           | kubernetes-ci-monitoring-role  |
+
+All workflows run aws eks update-kubeconfig internally before executing kubectl/helm commands.
+
+Execution
+
+All workflows are triggered manually:
+
+Actions → Select workflow → Run workflow
 
 Each workflow:
 
-  - Uses GitHub OIDC to assume an IAM role
-  - Generates a temporary kubeconfig
-  - Operates only within its allowed scope
+  * Assumes its IAM role via OIDC
 
-No credentials or kubeconfig files are stored in the repository.
+  * Updates kubeconfig
+
+  * Executes only its scoped responsibility
+
+This separation ensures:
+
+  * Least privilege
+
+  * Clear ownership
+
+  * Production-grade CI/CD design
+
+⚠️ Important Architectural Note: Helm & RBAC Separation
+
+Originally, Helm (kube-prometheus-stack) was tested inside the deploy-monitoring workflow. This approach was intentionally abandoned for architectural and security reasons.
+
+The kube-prometheus-stack Helm chart requires cluster-wide permissions, including:
+
+  * CRDs (Prometheus, Alertmanager, ServiceMonitor, PrometheusRule)
+
+  * ClusterRoles & ClusterRoleBindings
+
+  * Webhook configurations
+
+  * StatefulSets (Alertmanager)
+
+Granting these permissions to the kubernetes-ci-monitoring-role would violate the principle of least privilege.
+
+Final Design Decision
+
+  * Helm installation of kube-prometheus-stack is executed only in deploy-infra
+
+  * This workflow uses an infrastructure-level IAM role with elevated permissions
+
+  * deploy-monitoring is intentionally limited to non-destructive monitoring changes (rules, dashboards, configs)
+
+This separation:
+
+  * Preserves strict RBAC boundaries
+
+  * Avoids over-privileged CI roles
+
+  * Mirrors real-world production practices
+
+Summary
+
+  * Bootstrap is mandatory and local-only
+
+  * Local deployment is optional and manual
+
+  * GitHub Actions deployment is secure and recommended
+
+  * CI/CD works only because bootstrap exists
+
+This design intentionally prioritizes security over convenience.
 
 ---
 
-## Security Model
+### Verify Metrics Exposure
 
-### IAM → Kubernetes Mapping
+⚠️ Important — Ensure kubeconfig Is Configured
 
-  - AWS IAM roles are mapped to Kubernetes users/groups using the aws-auth ConfigMap
-  - Kubernetes does not understand IAM directly
-  - Authorization is enforced using RBAC
+Before running any verification or testing commands, make sure your local kubeconfig is pointing to the correct EKS cluster.
 
-### Separation of Concerns
+Check that metrics service has endpoints:
 
-  - Infra role: bootstrap access only, used once
-  - App role: can manage Deployments, Services, Ingresses (namespace-scoped)
-  - Monitoring role: can install Helm charts and monitoring CRDs
+```bash
+aws eks update-kubeconfig \
+  --name eks-cluster \
+  --region us-east-1
+```
+This step is required for:
 
-No workflow has unnecessary cluster-admin privileges.
+  * Port-forwarding Prometheus / Alertmanager
 
----
+  * Running kubectl get pods, svc, ingress
 
-## Application Deployment
+  * Verifying alert rules and metrics
 
-The application is deployed using standard Kubernetes primitives:
+If this step is skipped, kubectl may:
 
-* Deployment: manages pod replicas
-* Service (ClusterIP): internal load balancing
-* Ingress (ALB): external HTTP access
+  * Connect to the wrong cluster
 
-Endpoints:
+  * Fail silently
 
-* /health – exposed publicly via ALB
-* /metrics – internal only, consumed by Prometheus
+  * Produce misleading errors
 
-This design prevents metrics exposure to the public internet
-
----
-
-## Monitoring Architecture
-
-Monitoring is deployed using kube-prometheus-stack (Prometheus Operator).
-
-Components
-
-  - Prometheus – scrapes metrics
-  - Alertmanager – handles alerts
-  - Grafana – dashboards
-  - node-exporter – node-level metrics
-  - kube-state-metrics – Kubernetes object state
-
-All components run inside the cluster.
-
-Grafana is accessed via kubectl port-forward, not Ingress
-
----
-
-## Alerting Strategy
-
-This project intentionally defines a single alert:
-
-HighRequestLatency
-
-  - Purpose: Detect degraded user experience caused by slow responses.
-  - Logic: Alert when the 95th percentile request latency exceeds 1 second for more than 3 minutes
-
-```yaml
-histogram_quantile(
-  0.95,
-  rate(http_request_duration_seconds_bucket[5m])
-) > 1
+```bash
+kubectl get svc metrics-service
+kubectl get endpoints metrics-service
 ```
 
-Thresholds are intentionally conservative to avoid alerting on transient spikes.
+Expected:
 
----
+    One or more pod IPs on port 9090
 
-## Deployment Order (Execution Plan)
+### Verify Prometheus Is Scraping Metrics
 
-1. deploy-infra
+Port-forward Prometheus:
 
-    - Provision AWS infrastructure
-    - Create EKS cluster and node group
-    - Configure aws-auth and RBAC
+```bash
+kubectl port-forward -n monitoring svc/monitoring-kube-prometheus-prometheus 9090:9090
+```
 
-2. deploy-app
+Open browser:
 
-   - Deploy application (Deployment, Service, Ingress)
+```bash
+http://localhost:9090
+```
+In Prometheus UI → Graph, run:
 
-3. deploy-monitoring
+```bash
+app_request_duration_seconds_bucket
+```
 
-    - Install monitoring stack via Helm
-    - Apply ServiceMonitors and alert rules
+If data appears → metrics scraping works
 
-Deployment is intentionally planned to run once, not iteratively
+### Verify Alert Rule Is Loaded
+
+In Prometheus UI → Status → Rules
+
+You should see:
+
+```bash
+HighRequestLatency
+```
+
+Status:
+    inactive (before load test)
+
+
+### Generate Load (Trigger the Alert)
+
+Use the ALB DNS name from the ingress:
+
+```bash
+kubectl get ingress
+```
+
+Then run:
+
+```bash
+for i in {1..50}; do
+  curl "http://<ALB-DNS>/work?delay=1"
+done
+```
+
+What this does
+
+  - Forces request latency ≈ 1 second
+
+  - P95 latency exceeds 0.5s
+
+  - Condition sustained for 3 minutes
+
+### Expected Result (IMPORTANT)
+
+After ~3 minutes:
+
+  * Alert state transitions:
+
+    - inactive → pending → firing
+
+  * Alert visible in:
+
+    - Prometheus UI
+
+    - Alertmanager UI (if configured)
+
+The 0.5s threshold is intentionally low for demo/testing only.
+
+### Verify Alertmanager (Optional)
+
+```bash
+kubectl port-forward -n monitoring svc/monitoring-kube-prometheus-alertmanager 9093:9093
+```
+
+open:
+
+```bash
+http://localhost:9093
+```
+
+You should see:
+
+  HighRequestLatency alert firing
+
+
+Notes on Port-Forward Errors
+
+During heavy testing, you may see:
+
+```bash
+Timeout occurred (portforward.go)
+```
+
+This is normal under load and does not mean:
+
+  Prometheus is broken
+
+  Alerts failed
+
+  Configuration is invalid
 
 ---
 
 ## What This Project Demonstrates
 
-* Real-world EKS platform design
-* Secure CI/CD with GitHub Actions + OIDC
-* Practical Kubernetes RBAC usage
-* Thoughtful monitoring and alerting
-* Senior-level architectural reasoning
+  * Proper Prometheus histogram usage
+
+  * Percentile-based alerting (P95)
+
+  * Separation of traffic and metrics services
+
+  * Kubernetes-native monitoring with operators
+
+  * Real alert firing
 
 ---
 
-## Diagram
+## Production Considerations
 
-### High Level Architecture
-```text
-┌───────────────────────────────────────────────────────────────────────────────────────┐
-│                                   GitHub Actions                                      │
-│                                                                                       │
-│    ┌───────────────┐            ┌────────────────┐            ┌──────────────┐        │ 
-│    │ deploy-infra  │            │ deploy-app     │            │ deploy-mon   │        │
-│    │ (Terraform)   │            │ (kubectl)      │            │ (Helm)       │        │
-│    └───────┬───────┘            └───────┬────────┘            └───────┬──────┘        │
-│            │                            │                             │               │
-│     Assume IAM role              Assume IAM role               Assume IAM role        │
-|(kubernetes-ci-infra-role)    (kubernetes-ci-app-role)  (kubernetes-ci-monitoring-role)|
-│            │                            │                             │               │
-└────────────┼────────────────────────────┼─────────────────────────────┼───────────────┘
-             │                            │                             │
-             ▼                            ▼                             ▼
-┌───────────────────────────────────────────────────────────────────────────────────────┐
-│                                    AWS Account                                        │
-│                                                                                       │
-│             ┌───────────────────────────────────────────────────────┐                 │
-│             │                          VPC                          │                 │
-│             │                                                       │                 │
-│             │  ┌──────────────┐                   ┌──────────────┐  │                 │
-│             │  │ Public Subnet│                   │ PrivateSubnet│  │                 │
-│             │  │              │                   │              │  │                 │
-│             │  │  ALB         │                   │  EKS Nodes   │  │                 │
-│             │  │  (Ingress)   │                   │              │  │                 │
-│             │  └──────┬───────┘                   └──────┬───────┘  │                 │
-│             │         │                                  │          │                 │
-│             │         ▼                                  ▼          │                 │
-│             │   Internet Users                    Kubernetes Pods   │                 │
-│             │                                                       │                 │
-│             └───────────────────────────────────────────────────────┘                 │
-│                                                                                       │
-│             ┌───────────────────────────────────────────────────────┐                 │
-│             │                  EKS Control Plane                    │                 │
-│             │   (API Server – Managed by AWS)                       │                 │
-│             └───────────────────────────────────────────────────────┘                 │
-└───────────────────────────────────────────────────────────────────────────────────────┘
-```
+If this were production:
 
-### Application Data Flow
-```text
-User Browser
-     │
-     ▼
-AWS ALB (Ingress Controller)
-     │
-     ▼
-Kubernetes Service
-     │
-     ▼
-Application Pods (Flask)
-     │
-     ├── /health   (public via ALB)
-     └── /metrics  (internal only)
-```
+  * Increase alert thresholds
 
-### Monitoring Data Flow
-```text
-Application Pod
-   └── exposes /metrics
-           │
-           ▼
-Prometheus (inside cluster)
-           │
-           ▼
-Alertmanager
-           │
-           ▼
-Slack / Notification
+  * Tune histogram buckets
 
-Grafana
-   ▲
-   │ queries
-   │
-Prometheus
-```
+  * Add Grafana dashboards
 
-No Ingress for Prometheus / Grafana
-Grafana accessed via kubectl port-forward
-
-### Control Plane & Auth Flow
-```text
-kubectl / helm
-     │
-     │ aws eks update-kubeconfig
-     ▼
-EKS API Server
-     │
-     │ verifies IAM token (STS)
-     ▼
-aws-auth ConfigMap
-     │
-     │ maps IAM → Kubernetes groups
-     ▼
-RBAC (Role / ClusterRole)
-     │
-     ▼
-Allowed / Denied action
-```
-
-### CI/CD Responsibility Boundaries
-```text
-┌──────────────────────────────┐
-│ deploy-infra.yml             │
-│ IAM: kubernetes-ci-infra     │
-│                              │
-│ - Terraform                  │
-│ - EKS cluster                │
-│ - Node groups                │
-│ - aws-auth                   │
-│ - RBAC                       │
-│ (bootstrap admin only)       │
-└─────────────┬────────────────┘
-              │
-              ▼
-┌──────────────────────────────┐
-│ deploy-app.yml               │
-│ IAM: kubernetes-ci-app       │
-│                              │
-│ - Deployment                 │
-│ - Service                    │
-│ - Ingress                    │
-│ (NO cluster-admin)           │
-└─────────────┬────────────────┘
-              │
-              ▼
-┌──────────────────────────────┐
-│ deploy-monitoring.yml        │
-│ IAM: kubernetes-ci-monitoring│
-│                              │
-│ - Helm install monitoring    │
-│ - ServiceMonitors            │
-│ - Alerts                     │
-│ (monitoring scope only)      │
-└──────────────────────────────┘
-```
-
-### Second GitHub workflow (deploy-app.yml):
-```text
-GitHub Actions
-  ↓ (OIDC)
-IAM Role (app-deploy-ci-role)
-  ↓ (aws-auth mapping)
-Kubernetes User = github-actions
-  ↓ (RBAC)
-Role (namespace-scoped, limited)
-  ↓
-kubectl apply works
-``` 
+  * Add SLO-based alerts
 
 ---
 
-## Notes
+## Conclusion
 
-* TLS termination was intentionally omitted as it was already demonstrated in a previous HA WordPress project using CloudFront and multi-ALB ACM certificates.
-* The application itself is intentionally simple. The goal of the project is to demonstrate Kubernetes operations, observability, scaling behavior, and failure handling — not application complexity.
-* Persistent storage is intentionally omitted in this project to keep the focus on architecture, security, and observability design. In production, Prometheus would be backed by persistent volumes or long-term storage solutions such as Thanos.
-* Why the monitoring CI role needs cluster-admin
+This project demonstrates:
 
-  The deploy-monitoring workflow uses Helm to install kube-prometheus-stack (Prometheus Operator + CRDs + Grafana + Alertmanager).
-Helm does not only “deploy Prometheus pods”. During an install/upgrade it performs Kubernetes API operations such as:
-    - listing/creating/updating Secrets (release state stored as Secrets, and chart resources may also create Secrets)
-    - creating/updating ConfigMaps
-    - creating CustomResourceDefinitions (CRDs) and cluster-scoped resources
-    - creating RBAC objects (ServiceAccounts / Roles / ClusterRoles / Bindings)
-    - installing webhooks and other components that operate cluster-wide
+  * Correct monitoring concepts
 
-  Because of that, giving the monitoring workflow only “read-only monitoring permissions” is not enough — Helm itself needs broad permissions, especially on secrets inside the monitoring namespace, and often cluster-scoped rights for CRDs.
-For this project, the monitoring pipeline is intentionally granted cluster-admin, but it is isolated in its own IAM role + Kubernetes group, separate from the application deploy workflow.
-This keeps the application workflow least-privileged while allowing monitoring to be installed correctly
-* Root Cause Analysis – ALB Creation Failure
+  * Real-world alert logic
 
-  The AWS Load Balancer Controller relies on IRSA (IAM Roles for Service Accounts).
-After rebuilding the EKS cluster, the OIDC provider ID changed.
-  The IAM role trust policy for the controller was still referencing the old OIDC provider ARN, causing STS to reject AssumeRoleWithWebIdentity.
+  * Production-aligned Kubernetes patterns
 
-  Although Kubernetes resources (Ingress, Service, Pods) were valid, AWS rejected all ELB API calls, preventing ALB creation.
+The low thresholds and aggressive testing are intentional and clearly documented
 
-  The issue was resolved by dynamically referencing the cluster OIDC provider using Terraform data sources instead of hardcoding the ARN.
-* We initially attempted to protect the /metrics endpoint using custom HTTP headers (e.g. X-Prometheus) at the application level.
-  However, this approach does not work reliably with ALB Ingress, because:
-
-    - ALB forwards all paths to the backend service
-    - It does not support request filtering or header-based access control
-    - Any user can still reach /metrics if the endpoint is exposed on the same service
-
-  To solve this correctly, we changed the architecture:
-
-    - The application and metrics are exposed on different ports
-    - Two separate Kubernetes Services are used:
-        - app-service → public traffic via ALB
-        - metrics-service → internal-only access for Prometheus
-    - The /metrics endpoint is never exposed via Ingress
-  
-  This approach ensures metrics are not publicly reachable by design, rather than relying on application-level checks
----
 

@@ -23,7 +23,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::174512274809:role/kubernetes-ci-monitoring-role
+          role-to-assume: arn:aws:iam::<AWS_ACCOUNT_ID>:role/kubernetes-ci-monitoring-role
           aws-region: us-east-1
       # 3. Configure kubectl (EKS API access)
       - name: Update kubeconfig
