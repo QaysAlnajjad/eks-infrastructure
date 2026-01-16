@@ -29,7 +29,7 @@ The focus of the project is application latency monitoring using histograms and 
 - [Load Testing (Demo)](#load-testing-demo)
 - [Repository Structure](#repository-structure)
 - [Deployment & Execution](#deployment--execution)
-
+- [Demo Videos](#demo-videos)
 - [What This Project Demonstrates](#what-this-project-demonstrates)
 - [Production Considerations](#production-considerations)
 - [Conclusion](#conclusion)
@@ -623,7 +623,7 @@ When destroying infrastructure, Kubernetes-managed resources (Ingress / Services
 
 ---
 
-Demo Videos
+## Demo Videos
 
     ▶️ Demo 1 (6 min)
     OIDC Bootstrap + deply infra Workflow
