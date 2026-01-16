@@ -29,6 +29,7 @@ The focus of the project is application latency monitoring using histograms and 
 - [Load Testing (Demo)](#load-testing-demo)
 - [Repository Structure](#repository-structure)
 - [Deployment & Execution](#deployment--execution)
+
 - [What This Project Demonstrates](#what-this-project-demonstrates)
 - [Production Considerations](#production-considerations)
 - [Conclusion](#conclusion)
@@ -619,6 +620,21 @@ This is normal under load and does not mean:
 **Note** 
 
 When destroying infrastructure, Kubernetes-managed resources (Ingress / Services) must be deleted first to allow AWS Load Balancer Controller to clean up ALBs and ENIs. Otherwise, Terraform will not be able to delete the VPC.
+
+---
+
+Demo Videos
+
+    ▶️ Demo 1 (6 min)
+    OIDC Bootstrap + deply infra Workflow
+    https://www.youtube.com/watch?v=y4VK4MVjFYU&list=PL5EjBcFXdDPAhWIa9WbMPPtx7ldKwSDVc
+
+    ▶️ Demo 2 (9 min)
+    deploy app Workflow + Alerting
+    https://www.youtube.com/watch?v=f6ehHvG76Ww&list=PL5EjBcFXdDPAhWIa9WbMPPtx7ldKwSDVc&index=2
+
+    All demos were recorded using a sandbox AWS account with GitHub Actions OIDC authentication.
+    No static credentials, secrets, or IAM users were used or exposed.
 
 ---
 
