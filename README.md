@@ -16,6 +16,23 @@ The focus of the project is application latency monitoring using histograms and 
 
 ⚠️ Note: Some values (such as alert thresholds) are intentionally low to force alerts during testing/demo. These values are explained explicitly and should be adjusted in real production environments.
 
+---
+
+# Table of Contents
+
+- [Architecture](#architecture)
+- [Application](#application)
+- [Why Histogram?](#why-histogram)
+- [Alerting](#alerting)
+- [AlertManager](#alertmanager)
+- [Architecture](#architecture)
+- [Load Testing (Demo)](#load-testing-demo)
+- [Repository Structure](#repository-structure)
+- [Deployment & Execution](#deployment--execution)
+- [What This Project Demonstrates](#what-this-project-demonstrates)
+- [Production Considerations](#production-considerations)
+- [Conclusion](#conclusion)
+
 --- 
 
 ## Architecture
@@ -597,6 +614,11 @@ This is normal under load and does not mean:
   Alerts failed
 
   Configuration is invalid
+
+
+**Note** 
+
+When destroying infrastructure, Kubernetes-managed resources (Ingress / Services) must be deleted first to allow AWS Load Balancer Controller to clean up ALBs and ENIs. Otherwise, Terraform will not be able to delete the VPC.
 
 ---
 

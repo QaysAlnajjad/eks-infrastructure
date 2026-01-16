@@ -3,8 +3,16 @@
 set -e
 source "$(dirname "$0")/config.sh"
 
+# 1. Kubernetes resources that create AWS infra 
+aws eks update-kubeconfig \
+  --region $AWS_REGION \
+  --name $CLUSTER_NAME
+kubectl delete ingress --all || true
+kubectl delete svc --all || true
+echo "Waiting for AWS to clean up ENIs..."
+sleep 90
 
-# 1. Terraform
+# 2. Terraform
 terraform -chdir="terraform" init -reconfigure -upgrade \
     -backend-config="bucket=$TF_STATE_BUCKET_NAME" \
     -backend-config="key=EKS-project/terraform.tfstate" \
