@@ -16,6 +16,8 @@ The focus of the project is application latency monitoring using histograms and 
 
 ⚠️ Note: Some values (such as alert thresholds) are intentionally low to force alerts during testing/demo. These values are explained explicitly and should be adjusted in real production environments.
 
+***See RUNBOOK.md for operational procedures and incident handling.***
+
 ---
 
 # Table of Contents
