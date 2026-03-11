@@ -17,3 +17,16 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.eks_service_policy
   ]
 }
+
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = "argocd"
+  }
+}
+
+resource "helm_release" "argocd" {
+  name = "argocd"
+  namespace = "argocd"
+  repository = "https://argoproj.github.io/argo-helm"
+  chart = "argo-cd"
+}
