@@ -29,6 +29,14 @@ aws eks update-kubeconfig \
   --region $AWS_REGION \
   --name $CLUSTER_NAME
 
+
+
+# 4. IAM ↔ Kubernetes
+kubectl apply -f bootstrap/aws-auth.yaml  
+
+
+
+
 echo "Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
