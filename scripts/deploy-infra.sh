@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 source "$(dirname "$0")/config.sh"
 
@@ -29,50 +29,19 @@ aws eks update-kubeconfig \
   --region $AWS_REGION \
   --name $CLUSTER_NAME
 
-# 3. Namespaces 
-kubectl apply -f k8s/monitoring/namespace.yaml
+echo "Installing ArgoCD..."
+kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
-# 4. IAM ↔ Kubernetes
-kubectl apply -f k8s/bootstrap/aws-auth.yaml
-
-# 5. RBAC 
-kubectl apply -f k8s/rbac/app-role.yaml
-kubectl apply -f k8s/rbac/monitoring-cluster-role.yaml
-kubectl apply -f k8s/rbac/monitoring-helm-role.yaml
-kubectl apply -f k8s/rbac/rolebinding.yaml
-
-# 6. ALB Controller
-kubectl apply -f k8s/bootstrap/alb-controller-serviceaccount.yaml
-
-helm repo add eks https://aws.github.io/eks-charts
+helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 
-helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
-  -n kube-system \
-  --set clusterName=$CLUSTER_NAME \
-  --set serviceAccount.create=false \
-  --set serviceAccount.name=aws-load-balancer-controller
+helm upgrade --install argocd argo/argo-cd \
+  -n argocd \
+  --wait
 
-# 7.Monitoring 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
+echo "Applying root app..."
+kubectl apply -f bootstrap/root-app.yaml
 
-helm upgrade --install monitoring \
-  prometheus-community/kube-prometheus-stack \
-  --namespace monitoring \
-  --create-namespace \
-  -f k8s/monitoring/values.yaml
+echo "Bootstrap completed"
+kubectl get pods -n argocd
 
-# 8 Alertmanager routing (CRD-based, production way)
-kubectl apply -f k8s/monitoring/alerts/alertmanager-config.yaml
-
-
-# 9. ServiceMonitoring
-kubectl apply -f k8s/monitoring/servicemonitors/
-
-# 10. Apply alerts
-kubectl apply -f k8s/monitoring/alerts/
-
-
-echo "Infrastructure bootstrap completed"
-kubectl get nodes
