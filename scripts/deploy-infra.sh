@@ -14,13 +14,13 @@ if ! aws s3 ls "s3://$TF_STATE_BUCKET_NAME" --region "$TF_STATE_BUCKET_REGION" >
 fi
 
 echo "Running Terraform init..."
-terraform -chdir="terraform" init -reconfigure -upgrade \
+terraform init -reconfigure -upgrade \
   -backend-config="bucket=$TF_STATE_BUCKET_NAME" \
   -backend-config="key=EKS-project/terraform.tfstate" \
   -backend-config="region=$TF_STATE_BUCKET_REGION"
 
 echo "Running Terraform apply..."
-terraform -chdir="terraform" apply \
+terraform apply \
   -var aws_region="$AWS_REGION" \
   -var cluster_name="$CLUSTER_NAME" \
   -var-file="terraform.tfvars" \
