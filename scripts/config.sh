@@ -1,4 +1,4 @@
 AWS_REGION="us-east-1"
 CLUSTER_NAME="eks-cluster"
-TF_STATE_BUCKET_NAME="eks-state-bucket-01"
+TF_STATE_BUCKET_NAME="eks-state-bucket-011235468948"
 TF_STATE_BUCKET_REGION="us-east-1"
