@@ -31,6 +31,6 @@ data:
 
   mapUsers: |
     - userarn: arn:aws:iam::127214183643:user/admin-cli
-      username: local-admin
+      username: admin-cli
       groups:
         - system:masters
