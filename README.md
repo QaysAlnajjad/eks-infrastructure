@@ -56,31 +56,31 @@ This layer includes the base AWS resources required for EKS, such as:
 
    * VPC
 
-    * subnets
+   * subnets
 
-    * routing
+   * routing
 
-    * EKS control plane
+   * EKS control plane
 
-    * worker node group
+   * worker node group
 
-    * IAM roles and policies
+   * IAM roles and policies
 
-2. Cluster bootstrap
+### 2. Cluster bootstrap
 
 The bootstrap/ directory contains the initial resources required to connect the newly created cluster with the GitOps workflow.
 
 This includes:
 
-    * aws-auth.yaml for cluster access mapping
+   * aws-auth.yaml for cluster access mapping
 
-    * root-app.yaml for bootstrapping the root ArgoCD application
+   * root-app.yaml for bootstrapping the root ArgoCD application
 
-    * bootstrap Terraform files used during the initial handoff
+   * bootstrap Terraform files used during the initial handoff
 
-3. Helper operations
+### 3. Helper operations
 
-    * The scripts/ directory contains helper automation for deployment, cleanup, and destroy operations
+   * The scripts/ directory contains helper automation for deployment, cleanup, and destroy operations
 
 ---
 
