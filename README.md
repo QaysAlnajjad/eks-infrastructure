@@ -54,7 +54,7 @@ eks-infrastructure/
 
 This layer includes the base AWS resources required for EKS, such as:
 
-    * VPC
+   * VPC
 
     * subnets
 
