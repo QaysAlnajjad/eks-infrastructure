@@ -25,3 +25,74 @@ After the infrastructure is created, the cluster becomes the target environment 
 ---
 
 ## Repository Structure
+```text
+
+│
+├── modules
+│ ├── vpc
+│ ├── eks
+│ ├── iam
+│
+├── environments
+│ └── dev
+│ ├── main.tf
+│ ├── variables.tf
+│ ├── outputs.tf
+│
+├── providers.tf
+├── backend.tf
+└── variables.tf
+```
+
+---
+
+## Prerequisites
+
+Before deploying the infrastructure ensure you have:
+
+- AWS CLI configured
+- Terraform >= 1.5
+- kubectl
+- AWS IAM permissions to create infrastructure
+
+---
+
+## Deploy Infrastructure
+
+Initialize Terraform
+```text
+terraform init
+```
+
+Plan infrastructure
+```text
+terraform plan
+```
+
+
+Apply infrastructure
+```text
+terraform apply
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
