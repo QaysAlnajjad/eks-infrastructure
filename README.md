@@ -80,11 +80,90 @@ This includes:
 
 3. Helper operations
 
-The scripts/ directory contains helper automation for deployment, cleanup, and destroy operations
+  * The scripts/ directory contains helper automation for deployment, cleanup, and destroy operations
 
+---
 
+## Workflow
 
+The expected lifecycle is:
 
+  1. Provision AWS + EKS using Terraform from this repository
+
+  2. Configure cluster access
+
+  3. Apply bootstrap resources
+
+  4. Let ArgoCD point to the GitOps repository
+
+  5. Manage all Kubernetes applications from eks-gitops-apps
+
+---
+
+## Relationship to the GitOps repository
+
+This repository does not own long-term application delivery.
+
+After the cluster is ready, application deployment is managed from:
+
+  * eks-gitops-apps
+
+In other words:
+
+  * eks-infrastructure = cluster and bootstrap
+
+  * eks-gitops-apps = platform apps and workloads
+
+---
+
+## Typical usage
+
+Initialize Terraform
+
+```text
+terraform init
+```
+
+plan
+```tesxt
+terraform plan
+```
+
+apply
+```text
+terraform apply
+```
+
+configure kubectl
+```text
+aws eks update-kubeconfig --region <aws-region> --name <cluster-name>
+kubectl get nodes
+```
+
+## Bootstrap handoff
+
+After cluster creation, the bootstrap step connects infrastructure to GitOps by applying the required initial manifests from bootstrap/.
+
+That is the point where ArgoCD starts managing the application layer.
+
+## Runbook
+
+Operational procedures and troubleshooting notes are documented in:
+```text
+RUNBOOR.md
+```
+
+## Notes
+
+  * This repository focuses on infrastructure and initial bootstrap only.
+
+  * Ongoing application changes should be made in the GitOps repository, not here.
+
+  * Destroy operations should account for Kubernetes-managed AWS resources such as ALBs before Terraform teardown.
+
+## Author
+
+Qays Alnajjad
 
 
 
