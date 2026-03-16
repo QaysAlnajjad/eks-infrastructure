@@ -1,98 +1,42 @@
-# EKS Infrastructure (Terraform)
+# eks-infrastructure
 
-This repository provisions the AWS infrastructure required to run the Kubernetes platform and GitOps workflow.
+Terraform repository for provisioning the AWS and EKS foundation used by the platform.
 
-It creates the complete base environment for the observability platform and applications using **Terraform**.
+This repository is responsible for creating the Kubernetes infrastructure layer and the initial bootstrap resources needed before the GitOps applications repository takes over.
 
----
+## Purpose
 
-## Architecture
+This repository provisions and bootstraps:
 
-Terraform provisions the following AWS resources:
-
-- VPC
-- Public and private subnets
-- Internet Gateway
-- Route tables
-- EKS Cluster
-- Managed Node Groups
+- AWS networking for the cluster
+- Amazon EKS cluster and node group
 - IAM roles and policies
-- Security groups
-- OIDC provider for IAM roles for service accounts
+- OIDC / IRSA-related infrastructure
+- initial cluster access mapping
+- initial GitOps bootstrap handoff
 
-After the infrastructure is created, the cluster becomes the target environment for GitOps deployments managed by **ArgoCD**.
-
----
+The goal of this repository is to prepare a working EKS environment, then hand application delivery over to the GitOps repository.
 
 ## Repository Structure
-```text
 
-│
-├── modules
-│ ├── vpc
-│ ├── eks
-│ ├── iam
-│
-├── environments
-│ └── dev
-│ ├── main.tf
-│ ├── variables.tf
-│ ├── outputs.tf
-│
-├── providers.tf
+```text
+eks-infrastructure/
+├── .github/workflows/        # CI/CD workflows for infra deployment
+├── bootstrap/                # Initial bootstrap resources and Terraform bootstrap logic
+│   ├── aws-auth.yaml
+│   ├── main.tf
+│   ├── providers.tf
+│   ├── root-app.yaml
+│   └── variables.tf
+├── scripts/                  # Helper scripts for apply / destroy / operational tasks
+├── RUNBOOR.md                # Infrastructure runbook
+├── alb-controller-policy.json
 ├── backend.tf
-└── variables.tf
-```
-
----
-
-## Prerequisites
-
-Before deploying the infrastructure ensure you have:
-
-- AWS CLI configured
-- Terraform >= 1.5
-- kubectl
-- AWS IAM permissions to create infrastructure
-
----
-
-## Deploy Infrastructure
-
-Initialize Terraform
-```text
-terraform init
-```
-
-Plan infrastructure
-```text
-terraform plan
-```
-
-
-Apply infrastructure
-```text
-terraform apply
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+├── eks.tf
+├── iam.tf
+├── node-group.tf
+├── outputs.tf
+├── providers.tf
+├── terraform.tfvars
+├── variables.tf
+└── vpc.tf
