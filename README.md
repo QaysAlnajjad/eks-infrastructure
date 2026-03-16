@@ -45,3 +45,58 @@ eks-infrastructure/
 ├── terraform.tfvars
 ├── variables.tf
 └── vpc.tf
+```
+---
+
+## What this repository manages
+1. Core AWS infrastructure
+
+This layer includes the base AWS resources required for EKS, such as:
+
+VPC
+
+subnets
+
+routing
+
+EKS control plane
+
+worker node group
+
+IAM roles and policies
+
+2. Cluster bootstrap
+
+The bootstrap/ directory contains the initial resources required to connect the newly created cluster with the GitOps workflow.
+
+This includes:
+
+aws-auth.yaml for cluster access mapping
+
+root-app.yaml for bootstrapping the root ArgoCD application
+
+bootstrap Terraform files used during the initial handoff
+
+3. Helper operations
+
+The scripts/ directory contains helper automation for deployment, cleanup, and destroy operations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
