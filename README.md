@@ -22,6 +22,8 @@ The goal of this repository is to prepare a working EKS environment, then hand a
 ```text
 eks-infrastructure/
 ├── .github/workflows/        # CI/CD workflows for infra deployment
+|   |── deploy-infra.yaml
+|   └── destroy-infra.yaml 
 ├── bootstrap/                # Initial bootstrap resources and Terraform bootstrap logic
 │   ├── aws-auth.yaml
 │   ├── main.tf
