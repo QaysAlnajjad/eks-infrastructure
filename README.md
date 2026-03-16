@@ -13,7 +13,6 @@ Terraform provisions the following AWS resources:
 - VPC
 - Public and private subnets
 - Internet Gateway
-- NAT Gateway
 - Route tables
 - EKS Cluster
 - Managed Node Groups
