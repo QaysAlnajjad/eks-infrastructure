@@ -50,11 +50,11 @@ eks-infrastructure/
 
 ## What this repository manages
 
-1. Core AWS infrastructure
+### 1. Core AWS infrastructure
 
 This layer includes the base AWS resources required for EKS, such as:
 
-      * VPC
+    * VPC
 
     * subnets
 
