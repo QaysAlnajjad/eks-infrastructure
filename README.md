@@ -31,6 +31,9 @@ eks-infrastructure/
 │   ├── root-app.yaml
 │   └── variables.tf
 ├── scripts/                  # Helper scripts for apply / destroy / operational tasks
+|   ├── config.sh
+|   ├── deploy-infra.sh
+|   └── destroy-infra.sh
 ├── RUNBOOR.md                # Infrastructure runbook
 ├── alb-controller-policy.json
 ├── backend.tf
