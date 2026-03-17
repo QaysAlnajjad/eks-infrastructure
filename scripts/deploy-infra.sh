@@ -31,7 +31,7 @@ aws eks update-kubeconfig \
   --region "$AWS_REGION" \
   --name "$CLUSTER_NAME"
 
-echo "applying aws-auth..."
+echo "Applying aws-auth..."
 kubectl apply -f bootstrap/aws-auth.yaml
 
 echo "Installing ArgoCD..."
