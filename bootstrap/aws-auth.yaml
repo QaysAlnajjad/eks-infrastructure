@@ -11,18 +11,6 @@ data:
       groups:
         - system:masters
 
-    # APP DEPLOY
-    - rolearn: arn:aws:iam::127214183643:role/kubernetes-ci-app-role
-      username: ci:app
-      groups:
-        - app-deployers
-
-    # MONITORING DEPLOY
-    - rolearn: arn:aws:iam::127214183643:role/kubernetes-ci-monitoring-role
-      username: ci:monitoring
-      groups:
-        - monitoring-admins
-
     - rolearn: arn:aws:iam::127214183643:role/eks-node-role
       username: system:node:{{EC2PrivateDNSName}}
       groups:
