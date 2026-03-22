@@ -38,22 +38,21 @@ It does **not** own long-lived application manifests such as workloads, monitori
 
 ## Repository Structure
 
+## Repository Structure
+
 ```text
 eks-infrastructure/
-├── .github/workflows/        # CI/CD workflows for infra deployment
-|   |── deploy-infra.yaml
-|   └── destroy-infra.yaml 
-├── bootstrap/                # Initial bootstrap resources and Terraform bootstrap logic
-│   ├── aws-auth.yaml
+├── .github/workflows/       # CI workflows for deploy / destroy
+├── bootstrap/
+│   ├── aws-auth.yaml        # initial cluster access mapping
+│   ├── root-app.yaml        # root ArgoCD application
 │   ├── main.tf
 │   ├── providers.tf
-│   ├── root-app.yaml
 │   └── variables.tf
-├── scripts/                  # Helper scripts for apply / destroy / operational tasks
-|   ├── config.sh
-|   ├── deploy-infra.sh
-|   └── destroy-infra.sh
-├── RUNBOOR.md                # Infrastructure runbook
+├── scripts/
+│   ├── config.sh
+│   ├── deploy-infra.sh
+│   └── destroy-infra.sh
 ├── alb-controller-policy.json
 ├── backend.tf
 ├── eks.tf
