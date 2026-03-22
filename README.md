@@ -167,8 +167,10 @@ are all managed declaratively from the GitOps repository.
 ---
 
 ## Related Repository
+
 	• eks-gitops-apps: declarative Kubernetes applications and in-cluster resources managed by ArgoCD
 
+---
 
 ## Relationship to the GitOps repository
 
