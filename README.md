@@ -127,9 +127,14 @@ This is the bridge between infrastructure provisioning and GitOps reconciliation
 
 Maps initial IAM identities into Kubernetes RBAC so the cluster can be administered and bootstrapped safely.
 
-scripts/deploy-infra.sh
+### scripts/deploy-infra.sh
 
 Helper script used to initialize/apply Terraform, update kubeconfig, install ArgoCD, and create the root application.
+
+
+### scripts/destroy-infra.sh
+
+Helper script used to destroy Terraform resources created by deploy-infra.sh script.
 
 ---
 
