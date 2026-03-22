@@ -38,8 +38,6 @@ It does **not** own long-lived application manifests such as workloads, monitori
 
 ## Repository Structure
 
-## Repository Structure
-
 ```text
 eks-infrastructure/
 ├── .github/workflows/       # CI workflows for deploy / destroy
