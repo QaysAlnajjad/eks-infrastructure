@@ -116,6 +116,28 @@ This repository prepares the cluster; after that, the desired Kubernetes state i
 
 ---
 
+## Key Files
+
+### bootstrap/root-app.yaml
+
+Creates the root ArgoCD application:
+	•	name: platform-root
+	•	namespace: argocd
+	•	source repo: eks-gitops-apps
+	•	source path: apps/
+
+This is the bridge between infrastructure provisioning and GitOps reconciliation.
+
+### bootstrap/aws-auth.yaml
+
+Maps initial IAM identities into Kubernetes RBAC so the cluster can be administered and bootstrapped safely.
+
+scripts/deploy-infra.sh
+
+Helper script used to initialize/apply Terraform, update kubeconfig, install ArgoCD, and create the root application.
+
+---
+
 ## Relationship to the GitOps repository
 
 This repository does not own long-term application delivery.
