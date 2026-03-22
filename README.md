@@ -138,6 +138,34 @@ Helper script used to destroy Terraform resources created by deploy-infra.sh scr
 
 ---
 
+Deployment Model
+
+This repo is intended to be applied first.
+
+After a successful infrastructure deployment:
+	•	EKS exists
+	•	ArgoCD exists
+	•	ArgoCD starts reconciling eks-gitops-apps
+
+That means this repository is the entry point of the platform lifecycle.
+
+---
+
+What Happens After Bootstrap?
+
+Once the root application is created, ArgoCD begins syncing the apps/ directory from eks-gitops-apps.
+
+From that point onward:
+	•	platform apps
+	•	workloads
+	•	monitoring chart
+	•	monitoring resources
+	•	Telegram alert webhook
+
+are all managed declaratively from the GitOps repository.
+
+---
+
 ## Relationship to the GitOps repository
 
 This repository does not own long-term application delivery.
