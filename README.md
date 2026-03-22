@@ -8,16 +8,18 @@ This repository is responsible for creating the Kubernetes infrastructure layer 
 
 ## Overview
 
-This repository provisions and bootstraps:
+This repository builds the base AWS and Kubernetes platform, including:
 
-- AWS networking for the cluster
-- Amazon EKS cluster and node group
+- VPC and networking
+- EKS control plane
+- managed node group
 - IAM roles and policies
-- OIDC / IRSA-related infrastructure
-- initial cluster access mapping
-- initial GitOps bootstrap handoff
+- initial Kubernetes access mapping
+- ArgoCD bootstrap handoff to the GitOps applications repository
 
-The goal of this repository is to prepare a working EKS environment, then hand application delivery over to the GitOps repository.
+The handoff happens through the root ArgoCD application defined in `bootstrap/root-app.yaml`, which points to the `apps/` path in the `eks-gitops-apps` repository.
+
+---
 
 ## Repository Structure
 
