@@ -21,6 +21,21 @@ The handoff happens through the root ArgoCD application defined in `bootstrap/ro
 
 ---
 
+## Responsibilities
+
+This repository owns the **infrastructure layer only**.
+
+It is the source of truth for:
+
+- AWS networking and cluster foundation
+- IAM / IRSA-related resources required by the platform
+- bootstrap manifests needed before GitOps starts reconciling workloads
+- helper scripts used to deploy or destroy the environment
+
+It does **not** own long-lived application manifests such as workloads, monitoring resources, or in-cluster application definitions after bootstrap. Those live in `eks-gitops-apps`.
+
+---
+
 ## Repository Structure
 
 ```text
