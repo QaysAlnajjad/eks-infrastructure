@@ -123,10 +123,10 @@ This repository prepares the cluster; after that, the desired Kubernetes state i
 
 Creates the root ArgoCD application:
 
- • name: platform-root
- • namespace: argocd
- • source repo: eks-gitops-apps
- • source path: apps/
+ * name: platform-root
+ * namespace: argocd
+ * source repo: eks-gitops-apps
+ * source path: apps/
 
 This is the bridge between infrastructure provisioning and GitOps reconciliation.
 
