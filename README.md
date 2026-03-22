@@ -73,15 +73,10 @@ eks-infrastructure/
 This layer includes the base AWS resources required for EKS, such as:
 
    * VPC
-
    * subnets
-
    * routing
-
    * EKS control plane
-
    * worker node group
-
    * IAM roles and policies
 
 ### 2. Cluster bootstrap
@@ -91,9 +86,7 @@ The bootstrap/ directory contains the initial resources required to connect the 
 This includes:
 
    * aws-auth.yaml for cluster access mapping
-
    * root-app.yaml for bootstrapping the root ArgoCD application
-
    * bootstrap Terraform files used during the initial handoff
 
 ### 3. Helper operations
