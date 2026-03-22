@@ -2,9 +2,11 @@
 
 Terraform repository for provisioning the AWS and EKS foundation used by the platform.
 
-This repository is responsible for creating the Kubernetes infrastructure layer and the initial bootstrap resources needed before the GitOps applications repository takes over.
+This repository is responsible for creating the Kubernetes infrastructure layer and the initial bootstrap resources needed before ArgoCD takes over application delivery from the GitOps repository.
 
-## Purpose
+---
+
+## Overview
 
 This repository provisions and bootstraps:
 
