@@ -105,12 +105,13 @@ This includes:
 ## Bootstrap Flow
 
 The infrastructure bootstrap flow is:
-	1 Provision AWS resources with Terraform
-	2 Update kubeconfig for the new cluster
-	3 Apply bootstrap/aws-auth.yaml
-	4 Install ArgoCD in the cluster
-	5 Apply bootstrap/root-app.yaml
-	6 Let ArgoCD sync the application layer from eks-gitops-apps
+
+	1. Provision AWS resources with Terraform
+	2. Update kubeconfig for the new cluster
+	3. Apply bootstrap/aws-auth.yaml
+	4. Install ArgoCD in the cluster
+	5. Apply bootstrap/root-app.yaml
+	6. Let ArgoCD sync the application layer from eks-gitops-apps
 
 This repository prepares the cluster; after that, the desired Kubernetes state is managed from Git.
 
