@@ -6,6 +6,27 @@ This repository is responsible for creating the Kubernetes infrastructure layer 
 
 ---
 
+# 📘 Table of Contents
+
+- [Overview](#overview)
+- [Responsibilities](#responsibilities)
+- [Repository Structure](#repository-structure)
+- [What this repository manages](#what-this-repository-manages)
+- [Bootstrap Flow](#bootstrap-flow)
+- [Key Files](#key-files)
+- [Deployment Model](#deployment-model)
+- [What Happens After Bootstrap?](#what-happens-after-bootstrap?)
+- [Quick Start)](#quick-start)
+- [Related Repository](#related-repository)
+- [Relationship to the GitOps repository](#relationship-to-the-gitops-repository)
+- [Typical Usage](#typical-useage)
+- [Bootstrap handoff](#bootstrap-handoff)  
+- [Runbook](#runbook)
+- [Notes](#notes)
+- [Author](#author)
+
+---
+
 ## Overview
 
 This repository builds the base AWS and Kubernetes platform, including:
