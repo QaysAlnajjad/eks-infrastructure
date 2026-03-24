@@ -400,7 +400,7 @@ That is the point where ArgoCD starts managing the application layer.
 
 Operational procedures and troubleshooting notes are documented in:
 ```text
-RUNBOOR.md
+RUNBOOk.md
 ```
 
 ## Notes
