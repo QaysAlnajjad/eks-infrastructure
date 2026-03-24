@@ -166,6 +166,61 @@ are all managed declaratively from the GitOps repository.
 
 ---
 
+## Quick Start
+
+### Prerequisites
+
+* AWS CLI configured
+* Terraform >= 1.5
+* kubectl installed
+* AWS account with sufficient permissions
+
+---
+
+### 1. Clone repository
+
+git clone https://github.com/QaysAlnajjad/eks-infrastructure.git
+cd eks-infrastructure
+
+---
+
+### 2. Configure variables
+
+Edit terraform.tfvars:
+
+cluster_name = "my-eks-cluster"
+region       = "us-east-1"
+
+---
+
+### 3. Deploy infrastructure
+
+chmod +x scripts/deploy-infra.sh
+./scripts/deploy-infra.sh
+
+---
+
+### 4. Verify cluster
+
+kubectl get nodes
+
+---
+
+### 5. Access ArgoCD
+
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+---
+
+### Expected Result
+
+* EKS cluster is running
+* ArgoCD is installed
+* Root application is created
+* Applications from eks-gitops-apps are syncing automatically
+
+---
+
 ## Related Repository
 
 	• eks-gitops-apps: declarative Kubernetes applications and in-cluster resources managed by ArgoCD
