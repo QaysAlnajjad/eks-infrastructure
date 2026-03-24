@@ -17,6 +17,7 @@ This repository is responsible for creating the Kubernetes infrastructure layer 
 - [Deployment Model](#deployment-model)
 - [What Happens After Bootstrap?](#what-happens-after-bootstrap?)
 - [Quick Start](#quick-start)
+- [Troubleshooting](#troubleshooting)
 - [Related Repository](#related-repository)
 - [Relationship to the GitOps repository](#relationship-to-the-gitops-repository)
 - [Typical Usage](#typical-usage)
@@ -324,7 +325,7 @@ aws eks update-kubeconfig \
   --name <cluster_name>
 ```
 
-If you deploy the infrastructure locally, then the script will update kubeconfig
+When deploying locally using the script, kubeconfig is updated automatically.
 
 ---
 
@@ -346,6 +347,18 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 * ArgoCD is installed
 * Root application is created
 * Applications from eks-gitops-apps are syncing automatically
+
+---
+
+## Troubleshooting
+
+If deployment fails, check the following:
+
+  * Terraform errors and state configuration
+  * AWS IAM permissions and OIDC setup
+  * kubectl connectivity to the cluster
+  * ArgoCD pods status: `kubectl get pods -n argocd`
+  * Helm installation logs
 
 ---
 
