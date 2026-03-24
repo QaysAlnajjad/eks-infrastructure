@@ -184,6 +184,67 @@ are all managed declaratively from the GitOps repository.
 ```
 ---
 
+### 2. Configure bootstrap/main.tf
+
+Edit bootstrap/main.tf:
+
+```text
+resource "aws_iam_role" "ci_infra" {
+  name = "kubernetes-ci-infra-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:YOUR_GITHUB_USERNAME/YOUR_REPO_NAME:*"
+          }
+        }
+      }
+    ]
+  })
+}
+```
+
+Replace your GitHub repo URL
+
+### 3. Configure bootstrap/aws-auth.yaml
+
+Edit bootstrap/aws-auth.yaml to replace your AWS account ID:
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    # INFRA / CLUSTER ADMIN
+    - rolearn: arn:aws:iam::<AWS_ACCOUNT_ID>:role/kubernetes-ci-infra-role
+      username: ci:infra
+      groups:
+        - system:masters
+
+    - rolearn: arn:aws:iam::<AWS_ACCOUNT_ID>:role/eks-node-role
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+
+  mapUsers: |
+    - userarn: arn:aws:iam::<AWS_ACCOUNT_ID>:user/admin-cli
+      username: admin-cli
+      groups:
+        - system:masters
+```
+
 ### 2. Configure variables
 
 Edit terraform.tfvars:
