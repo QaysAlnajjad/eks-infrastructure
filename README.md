@@ -205,11 +205,11 @@ are all managed declaratively from the GitOps repository.
 
 ---
 
-### 2. Optional: Configure GitHub Actions OIDC bootstrap
+### 2. Optional: Configure and deply GitHub Actions OIDC bootstrap
 
 This step is only required if you want to deploy infrastructure via GitHub Actions using OIDC.
 
-Edit bootstrap/main.tf:
+#### 2.1. Edit bootstrap/main.tf:
 
 ```text
 resource "aws_iam_role" "ci_infra" {
@@ -241,7 +241,7 @@ Note: bootstrap/aws-auth.yaml is applied automatically by scripts/deploy-infra.s
 
 ---
 
-### 3. Initiate and deploy bootstrap code
+#### 2.1. Initiate and deploy bootstrap code
 
 ```text
 cd bootstrap/
@@ -249,10 +249,11 @@ terraform init
 terraform apply
 ```
 
+This step only creates the GitHub OIDC provider and IAM role required for CI/CD.
+
 ---
 
-
-### 4. Configure bootstrap/aws-auth.yaml
+### 3. Configure bootstrap/aws-auth.yaml
 
 Edit bootstrap/aws-auth.yaml to replace your AWS account ID:
 
@@ -285,7 +286,7 @@ data:
 
 ---
 
-### 5. Configure variables
+### 4. Configure variables
 
 Edit terraform.tfvars:
 
@@ -296,24 +297,24 @@ region       = "us-east-1"
 
 ---
 
-### 6. Deploy infrastructure
+### 5. Deploy infrastructure
 
 There are two options to deploy infrastructure:
 
-#### 6.1 Locally
+#### 5.1. Locally
 
 ```text
 chmod +x scripts/deploy-infra.sh
 ./scripts/deploy-infra.sh
 ```
 
-### 6.2 GitHub Actions
+### 5.2. GitHub Actions
 
 After pushing the project to your GitHub repository, you can use the flow "deploy-infra" to deploy the infrastructure.
 
 ---
 
-### 7. Update Kubeconfig
+### 6. Update Kubeconfig
 
 ```text
 aws eks update-kubeconfig \
@@ -323,13 +324,13 @@ aws eks update-kubeconfig \
 
 ---
 
-### 8. Verify cluster
+### 7. Verify cluster
 
 kubectl get nodes
 
 ---
 
-### 9. Access ArgoCD
+### 8. Access ArgoCD
 
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 
