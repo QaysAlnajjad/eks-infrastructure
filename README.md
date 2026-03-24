@@ -48,7 +48,6 @@ eks-infrastructure/
 │   ├── root-app.yaml        # root ArgoCD application
 │   ├── main.tf
 │   ├── providers.tf
-│   └── variables.tf
 ├── scripts/
 │   ├── config.sh
 │   ├── deploy-infra.sh
@@ -185,7 +184,9 @@ are all managed declaratively from the GitOps repository.
 
 ---
 
-### 2. Configure bootstrap/main.tf
+### 2. Optional: Configure GitHub Actions OIDC bootstrap
+
+This step is only required if you want to deploy infrastructure via GitHub Actions using OIDC.
 
 Edit bootstrap/main.tf:
 
