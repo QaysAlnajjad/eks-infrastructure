@@ -212,7 +212,6 @@ IAM → Kubernetes Authorization
 |----------------------|--------------------------------|------------------------------ ---|
 | deploy-infra         | kubernetes-ci-infra-role       | Cluster bootstrap (one-time)	   |
 | deploy-app           | kubernetes-ci-app-role         | Namespace-scoped                 |
-| deploy-monitoring    | kubernetes-ci-monitoring-role  | Cluster-wide (Helm + CRDs)       |
 ```
 ---
 
