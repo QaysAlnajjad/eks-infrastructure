@@ -179,8 +179,8 @@ are all managed declaratively from the GitOps repository.
 
 ### 1. Clone repository
 
-git clone https://github.com/QaysAlnajjad/eks-infrastructure.git
-cd eks-infrastructure
+  git clone https://github.com/QaysAlnajjad/eks-infrastructure.git
+  cd eks-infrastructure
 
 ---
 
