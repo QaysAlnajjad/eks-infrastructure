@@ -205,7 +205,7 @@ are all managed declaratively from the GitOps repository.
 
 ---
 
-### 2. Optional: Configure and deply GitHub Actions OIDC bootstrap
+### 2. Optional: Configure and deploy GitHub Actions OIDC bootstrap
 
 This step is only required if you want to deploy infrastructure via GitHub Actions using OIDC.
 
@@ -241,7 +241,7 @@ Note: bootstrap/aws-auth.yaml is applied automatically by scripts/deploy-infra.s
 
 ---
 
-#### 2.1. Initiate and deploy bootstrap code
+#### 2.2. Initiate and deploy bootstrap code
 
 ```text
 cd bootstrap/
@@ -316,13 +316,15 @@ After pushing the project to your GitHub repository, you can use the flow "deplo
 
 Note: The deploy-infra.sh script handles Terraform apply, kubeconfig update, aws-auth configuration, ArgoCD installation, and root application bootstrap.
 
-### 6. Update Kubeconfig
+### 6. (Optional) Update kubeconfig manually if not using the script
 
 ```text
 aws eks update-kubeconfig \
   --region <region_name> \
   --name <cluster_name>
 ```
+
+If you deploy the infrastructure locally, then the script will update kubeconfig
 
 ---
 
@@ -378,7 +380,7 @@ terraform init
 ```
 
 plan
-```tesxt
+```text
 terraform plan
 ```
 
