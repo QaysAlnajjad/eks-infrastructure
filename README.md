@@ -217,7 +217,18 @@ Replace your GitHub repo URL
 
 ---
 
-### 3. Configure bootstrap/aws-auth.yaml
+### 3. Initiate and deploy bootstrap code
+
+```text
+cd bootstrap/
+terraform init
+terraform apply
+```
+
+---
+
+
+### 4. Configure bootstrap/aws-auth.yaml
 
 Edit bootstrap/aws-auth.yaml to replace your AWS account ID:
 
@@ -250,39 +261,51 @@ data:
 
 ---
 
-### 4. Initiate and deploy bootstrap code
+### 5. Configure variables
+
+Edit terraform.tfvars:
 
 ```text
-cd bootstrap/
-terraform init
-terraform apply
+cluster_name = "my-eks-cluster"
+region       = "us-east-1"
 ```
 
 ---
 
-### 2. Configure variables
+### 6. Deploy infrastructure
 
-Edit terraform.tfvars:
+There are two options to deploy infrastructure:
 
-cluster_name = "my-eks-cluster"
-region       = "us-east-1"
+#### 6.1 Locally
 
----
-
-### 3. Deploy infrastructure
-
+```text
 chmod +x scripts/deploy-infra.sh
 ./scripts/deploy-infra.sh
+```
+
+### 6.2 GitHub Actions
+
+After pushing the project to your GitHub repository, you can use the flow "deploy-infra" to deploy the infrastructure.
 
 ---
 
-### 4. Verify cluster
+### 7. Update Kubeconfig
+
+```text
+aws eks update-kubeconfig \
+  --region <region_name> \
+  --name <cluster_name>
+```
+
+---
+
+### 8. Verify cluster
 
 kubectl get nodes
 
 ---
 
-### 5. Access ArgoCD
+### 9. Access ArgoCD
 
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 
