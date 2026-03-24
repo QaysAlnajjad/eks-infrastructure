@@ -182,6 +182,7 @@ are all managed declaratively from the GitOps repository.
   git clone https://github.com/QaysAlnajjad/eks-infrastructure.git
   cd eks-infrastructure
 ```
+
 ---
 
 ### 2. Configure bootstrap/main.tf
@@ -214,6 +215,8 @@ resource "aws_iam_role" "ci_infra" {
 
 Replace your GitHub repo URL
 
+---
+
 ### 3. Configure bootstrap/aws-auth.yaml
 
 Edit bootstrap/aws-auth.yaml to replace your AWS account ID:
@@ -244,6 +247,18 @@ data:
       groups:
         - system:masters
 ```
+
+---
+
+### 4. Initiate and deploy bootstrap code
+
+```text
+cd bootstrap/
+terraform init
+terraform apply
+```
+
+---
 
 ### 2. Configure variables
 
