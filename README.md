@@ -314,6 +314,8 @@ After pushing the project to your GitHub repository, you can use the flow "deplo
 
 ---
 
+Note: The deploy-infra.sh script handles Terraform apply, kubeconfig update, aws-auth configuration, ArgoCD installation, and root application bootstrap.
+
 ### 6. Update Kubeconfig
 
 ```text
