@@ -6,19 +6,19 @@ metadata:
 data:
   mapRoles: |
     # INFRA / CLUSTER ADMIN
-    - rolearn: arn:aws:iam::127214183643:role/kubernetes-ci-infra-role
+    - rolearn: arn:aws:iam::<AWS_ACCOUNT_ID>:role/kubernetes-ci-infra-role
       username: ci:infra
       groups:
         - system:masters
 
-    - rolearn: arn:aws:iam::127214183643:role/eks-node-role
+    - rolearn: arn:aws:iam::<AWS_ACCOUNT_ID>:role/eks-node-role
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers
         - system:nodes
 
   mapUsers: |
-    - userarn: arn:aws:iam::127214183643:user/admin-cli
+    - userarn: arn:aws:iam::<AWS_ACCOUNT_ID>:user/admin-cli
       username: admin-cli
       groups:
         - system:masters
