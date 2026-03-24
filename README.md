@@ -214,7 +214,9 @@ resource "aws_iam_role" "ci_infra" {
 }
 ```
 
-Replace your GitHub repo URL
+Replace your GitHub repo URL.
+
+Note: bootstrap/aws-auth.yaml is applied automatically by scripts/deploy-infra.sh after the cluster is created and kubeconfig is updated.
 
 ---
 
