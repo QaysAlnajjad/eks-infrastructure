@@ -205,43 +205,35 @@ IAM → Kubernetes Authorization
 
 ---
 
-### CI/CD Responsibility Boundaries
+### Access Model
 
-```text
-| Workflow             | IAM Role                       | Kubernetes Permissions           |
-|----------------------|--------------------------------|------------------------------ ---|
-| deploy-infra         | kubernetes-ci-infra-role       | Cluster bootstrap (one-time)	   |
-```
+  * deploy-infra uses the IAM role kubernetes-ci-infra-role, mapped through aws-auth to system:masters, to perform initial cluster bootstrap tasks.
+  * eks-node-role is mapped to allow worker nodes to join and operate in the cluster.
+  * admin-cli provides manual administrative access for break-glass or operational debugging.
+  * ArgoCD permissions are not defined through aws-auth; they are granted through Kubernetes service accounts and RBAC inside the cluster
+
 ---
 
-### Why Infrastructure Bootstrap Uses Cluster-Admin
+### Bootstrap and Privilege Boundaries
 
-The infrastructure bootstrap process (`deploy-infra`) performs one-time cluster initialization tasks that require elevated privileges.
+deploy-infra is responsible for initial cluster provisioning and bootstrap tasks such as:
 
-This includes:
-- Installing Kubernetes CRDs (Prometheus Operator, Alertmanager)
-- Creating ClusterRoles and ClusterRoleBindings
-- Installing Helm charts that create cluster-scoped resources
-- Configuring aws-auth for IAM → Kubernetes mapping
-- Deploying controllers such as AWS Load Balancer Controller
+  * provisioning AWS and EKS infrastructure
+  * updating kubeconfig
+  * applying aws-auth
+  * installing ArgoCD
+  * creating the root ArgoCD application
 
-Because these actions affect the cluster globally, the bootstrap pipeline is intentionally granted cluster-admin permissions.
+After bootstrap, ArgoCD takes over reconciliation of platform and application resources from the GitOps repository.
 
-To reduce risk:
-- Bootstrap is executed only during initial provisioning
-- Application and monitoring workflows operate with restricted, namespace-scoped permissions
-- No day-to-day deployment pipeline has cluster-admin access
+Some of those GitOps-managed resources may be cluster-scoped, such as:
 
-### Separation Between Bootstrap and Day-2 Operations
+  * CRDs
+  * ClusterRoles / ClusterRoleBindings
+  * controllers
+  * monitoring stack components
 
-This project intentionally separates:
-- **Bootstrap responsibilities** (cluster creation, controllers, CRDs)
-- **Day-2 operations** (application deployment, monitoring configuration)
-
-This mirrors real-world production environments where:
-- Platform teams own cluster initialization
-- Application teams operate with least privilege
-- Monitoring changes do not require full administrative access
+Because of that, elevated Kubernetes permissions are required not only during bootstrap, but also for the GitOps control plane when managing cluster-scoped resources.
 
 ---
 
