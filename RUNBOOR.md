@@ -207,10 +207,10 @@ IAM → Kubernetes Authorization
 
 ### Access Model
 
-  * deploy-infra uses the IAM role kubernetes-ci-infra-role, mapped through aws-auth to system:masters, to perform initial cluster bootstrap tasks.
-  * eks-node-role is mapped to allow worker nodes to join and operate in the cluster.
-  * admin-cli provides manual administrative access for break-glass or operational debugging.
-  * ArgoCD permissions are not defined through aws-auth; they are granted through Kubernetes service accounts and RBAC inside the cluster
+  * *deploy-infra workflow* uses the IAM role kubernetes-ci-infra-role, mapped through aws-auth to system:masters, to perform initial cluster bootstrap tasks.
+  * *eks-node-role* is mapped to allow worker nodes to join and operate in the cluster.
+  * *admin-cli* provides manual administrative access for break-glass or operational debugging.
+  * *ArgoCD* permissions are not defined through aws-auth; they are granted through Kubernetes service accounts and RBAC inside the cluster
 
 ---
 
