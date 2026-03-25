@@ -211,7 +211,6 @@ IAM → Kubernetes Authorization
 | Workflow             | IAM Role                       | Kubernetes Permissions           |
 |----------------------|--------------------------------|------------------------------ ---|
 | deploy-infra         | kubernetes-ci-infra-role       | Cluster bootstrap (one-time)	   |
-| deploy-app           | kubernetes-ci-app-role         | Namespace-scoped                 |
 ```
 ---
 
