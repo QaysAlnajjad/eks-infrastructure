@@ -164,9 +164,9 @@ Helper script used to destroy Terraform resources created by deploy-infra.sh scr
 This repo is intended to be applied first.
 
 After a successful infrastructure deployment:
-	•	EKS exists
-	•	ArgoCD exists
-	•	ArgoCD starts reconciling eks-gitops-apps
+	* EKS exists
+	* ArgoCD exists
+	* ArgoCD starts reconciling eks-gitops-apps
 
 That means this repository is the entry point of the platform lifecycle.
 
