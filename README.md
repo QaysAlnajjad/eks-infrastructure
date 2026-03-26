@@ -164,9 +164,9 @@ Helper script used to destroy Terraform resources created by deploy-infra.sh scr
 This repo is intended to be applied first.
 
 After a successful infrastructure deployment:
-	* EKS exists
-	* ArgoCD exists
-	* ArgoCD starts reconciling eks-gitops-apps
+  * EKS exists
+  * ArgoCD exists
+  * ArgoCD starts reconciling eks-gitops-apps
 
 That means this repository is the entry point of the platform lifecycle.
 
@@ -177,11 +177,12 @@ That means this repository is the entry point of the platform lifecycle.
 Once the root application is created, ArgoCD begins syncing the apps/ directory from eks-gitops-apps.
 
 From that point onward:
-	* platform apps
-	* workloads
-	* monitoring chart
-	* monitoring resources
-	* Telegram alert webhook
+
+  * platform apps
+  * workloads
+  * monitoring chart
+  * monitoring resources
+  * Telegram alert webhook
 
 are all managed declaratively from the GitOps repository.
 
