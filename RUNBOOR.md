@@ -1,195 +1,24 @@
-# Kubernetes Platform on AWS (EKS)
+# Infrastructure Bootstrap Runbook
 
 ## Purpose
 
-This runbook documents operational procedures for monitoring, troubleshooting, and maintaining the EKS-based Kubernetes platform.
+This document defines the security model, access boundaries, and bootstrap procedures for the Kubernetes platform infrastructure on AWS.
 
-The goal is to demonstrate production-style operational readiness, including:
+It focuses on the initial provisioning phase of the platform, where infrastructure components, access controls, and GitOps foundations are established.
 
-  * Incident response
+The goal is to provide a clear and controlled approach to:
 
-  * Root cause analysis
+  * Infrastructure provisioning using Terraform
+  * Secure access configuration via AWS IAM and Kubernetes RBAC
+  * Initial cluster bootstrap, including ArgoCD installation
+  * Establishing privilege boundaries between bootstrap and day-2 operations
 
-  * Monitoring-driven decisions
+This runbook intentionally separates infrastructure bootstrap responsibilities from ongoing operational workflows. It reflects a production-oriented model where:
 
-  * Secure and controlled remediation steps
+  * Infrastructure (platform) concerns are handled with elevated privileges during controlled bootstrap phases
+  * Continuous deployment and application management are delegated to GitOps workflows with restricted access
 
----
-
-## Platform Overview
-
-  * Cloud Provider: AWS
-
-  * Kubernetes: Amazon EKS (managed control plane)
-
-  * Ingress: AWS ALB via AWS Load Balancer Controller
-
-  * CI/CD: GitHub Actions with OIDC (no static credentials)
-
-  * Monitoring: kube-prometheus-stack (Prometheus, Alertmanager, Grafana)
-
----
-
-## Monitoring & Alerting
-
-Active Alerts
-
-```
-| Alert Name           | Purpose                                                                |
-|----------------------| -----------------------------------------------------------------------|
-| HighRequestLatency   | Detect degraded user experience caused by slow application responses   |	
-```
-
-Alert Condition
-```bash
-95th percentile request latency > 1s for 3 minutes
-```
-This alert is intentionally conservative to avoid noise and focus on user-impacting issues.
-
----
-
-## Incident Response Procedures
-
-Incident: HighRequestLatency
-Symptoms
-
-  * Alert HighRequestLatency is firing
-
-  * Users may experience slow responses
-
-  * No immediate pod crashes observed
-
-### Step-by-Step Investigation
-
-1️⃣ Confirm the Alert
-
-  * Open Grafana dashboard
-
-  * Verify:
-
-    * Request latency (p95)
-
-    * Error rate
-
-    * Request volume
-
-2️⃣ Identify Affected Components
-
-```bash
-kubectl get pods -n app
-kubectl get svc -n app
-kubectl get ingress -n app
-```
-
-Check:
-
-  * Pod restarts
-
-  * Readiness probe failures
-
-  * Deployment replica count
-
-3️⃣ Inspect Application Pods
-
-```bash
-kubectl describe pod <pod-name> -n app
-kubectl logs <pod-name> -n app
-```
-
-Look for:
-
-  * CPU throttling
-
-  * Memory pressure
-
-  * Slow downstream dependencies
-
-  * Application-level bottlenecks
-
-4️⃣ Check Resource Utilization
-
-```bash
-kubectl top pods -n app
-kubectl top nodes
-```
-
-Indicators:
-
-  * High CPU usage
-
-  * Node resource exhaustion
-
-  * Imbalanced pod scheduling
-
-5️⃣ Validate Autoscaling Behavior
-
-```bash
-kubectl get hpa -n app
-kubectl describe hpa <hpa-name> -n app
-```
-Confirm:
-
-  * HPA is scaling correctly
-
-  * Metrics server is functioning
-
-  * Desired vs current replicas
-
----
-
-## Mitigation Actions
-Immediate Mitigation
-
-  * Increase replicas manually if required
-```bash
-kubectl scale deployment app --replicas=<N> -n app
-```
-
-  * If a recent deployment occurred:
-```bash
-kubectl rollout undo deployment app -n app
-```
-
-Post-Mitigation Validation
-
-  * Confirm alert clears
-
-  * Verify latency returns to baseline
-
-  * Monitor error rates for 10–15 minutes
-
----
-
-## Failure Scenarios & Expected Behavior
-
-🔁 Pod CrashLoop
-
-Action
-
-```bash
-kubectl delete pod <pod-name> -n app
-```
-Expected Behavior
-
-  * Deployment recreates pod
-
-  * Service routing remains intact
-
-  * No alert unless latency degrades
-
-🔻 Node Failure
-
-Action
-
-  * Terminate EC2 node manually (simulated)
-
-Expected Behavior
-
-  * Pods rescheduled onto healthy nodes
-
-  * Temporary latency spike possible
-
-  * Alert only triggers if degradation persists
+This ensures a balance between operational safety, security, and maintainability of the platform.
 
 ---
 
@@ -203,14 +32,14 @@ IAM → Kubernetes Authorization
 
   * No static AWS credentials used anywhere
 
----
-
 ### Access Model
 
   * **deploy-infra** workflow uses the IAM role kubernetes-ci-infra-role, mapped through aws-auth to system:masters, to perform initial cluster bootstrap tasks.
   * **eks-node-role** is mapped to allow worker nodes to join and operate in the cluster.
   * **admin-cli** provides manual administrative access for break-glass or operational debugging.
   * **ArgoCD** permissions are not defined through aws-auth; they are granted through Kubernetes service accounts and RBAC inside the cluster
+
+Note: ArgoCD may require cluster-scoped permissions (via Kubernetes RBAC) to manage resources such as CRDs and controllers. These permissions are separate from AWS IAM and are defined within the cluster.
 
 ---
 
@@ -259,19 +88,4 @@ Cost optimizations (production considerations):
 
 ---
 
-## Conclusion
-
-This runbook demonstrates:
-
-  * Real-world incident handling
-
-  * Monitoring-driven troubleshooting
-
-  * Secure operational boundaries
-
-  * Production-oriented thinking
-
-The platform is designed for clarity, safety, and operational correctness, not feature overload
-
----
 
