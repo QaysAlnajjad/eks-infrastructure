@@ -338,7 +338,11 @@ kubectl get nodes
 
 ### 8. Access ArgoCD
 
+```text
 kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+Note: ArgoCD RBAC resources (ServiceAccounts, ClusterRoles, and ClusterRoleBindings) are automatically created by the ArgoCD Helm chart during installation.
 
 ---
 
