@@ -39,7 +39,7 @@ IAM → Kubernetes Authorization
   * **admin-cli** provides manual administrative access for break-glass or operational debugging.
   * **ArgoCD** permissions are not defined through aws-auth; they are granted through Kubernetes service accounts and RBAC inside the cluster
 
-Notes: 
+### Notes: 
   * ArgoCD may require cluster-scoped permissions (via Kubernetes RBAC) to manage resources such as CRDs and controllers. These permissions are separate from AWS IAM and are defined within the cluster.
   * ArgoCD RBAC resources (ServiceAccounts, ClusterRoles, and ClusterRoleBindings) are automatically created by the ArgoCD Helm chart during installation.
 
