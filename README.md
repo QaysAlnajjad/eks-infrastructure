@@ -229,7 +229,7 @@ Resolution:
 
 ### Note on tfsec Findings
 
-Some tfsec findings shown in the walkthrough are intentionally not fully remediated in this iteration.
+Some tfsec findings shown in the EKS-Infrastructure-Terraform-Plan-Check video are intentionally not fully remediated in this iteration.
 
 The goal of this project is to demonstrate awareness of security issues and the ability to prioritize them, rather than to enforce a fully hardened configuration.
 
