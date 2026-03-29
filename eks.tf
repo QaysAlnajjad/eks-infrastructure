@@ -9,7 +9,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   tags = {
-    Name = "${var.cluster_name}"
+    Name = var.cluster_name
   }
 
   depends_on = [
