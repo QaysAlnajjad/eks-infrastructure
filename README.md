@@ -199,10 +199,36 @@ The following videos document actual pipeline runs, including:
 
 ▶️ **EKS-Infrastructure-Terraform-Format-Check** https://youtu.be/KGTHxcOkwdg
 
+Terraform Formatting Failures
+Cause: inconsistent formatting across Terraform files
+Resolution: enforced terraform fmt -check in CI and standardized formatting across the repository
+
+-----
+
 ▶️ **EKS-Infrastructure-TFLint-Check** https://youtu.be/1rYfRzthVTs
+
+Issue:
+  * Missing required_version and provider version constraints
+  * Deprecated interpolation syntax (${...})
+  * Unused resources in IAM definitions
+
+Resolution:
+  * added explicit Terraform and provider version constraints
+  * updated syntax to modern Terraform style
+  * removed or refactored unused resources
+
+-----
 
 ▶️ **EKS-Infrastructure-Terraform-Plan-Check** https://youtu.be/VCUeJGv07FI
 
+Error: Backend initialization required during terraform plan
+Cause: using remote S3 backend without initializing it in CI
+
+Resolution:
+  * removed terraform plan from PR checks
+  * kept backend-independent validation steps
+
+----
 
 ### Why `terraform plan/apply` is not part of PR checks
 
