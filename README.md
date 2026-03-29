@@ -15,7 +15,7 @@ This repository is responsible for creating the Kubernetes infrastructure layer 
 - [Bootstrap Flow](#bootstrap-flow)
 - [Key Files](#key-files)
 - [Deployment Model](#deployment-model)
-- [Engineering Insights & CI Analysis](#engineering-insights-ci-analysis)
+- [Engineering Insights & CI Analysis](#engineering-insights--ci-analysis)
 - [What Happens After Bootstrap?](#what-happens-after-bootstrap?)
 - [Quick Start](#quick-start)
 - [Troubleshooting](#troubleshooting)
