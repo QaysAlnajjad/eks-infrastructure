@@ -202,7 +202,7 @@ The following videos document actual pipeline runs, including:
 ▶️ **EKS-Infrastructure-TFLint-Checks**
 (PUT_VIDEO_LINK_HERE)
 
-▶️ **EKS-Infrastructure-Terraform-Apply-Checks**
+▶️ **EKS-Infrastructure-Terraform-Plan-Checks**
 (PUT_VIDEO_LINK_HERE)
 
 ### Engineering Approach
