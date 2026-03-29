@@ -15,7 +15,7 @@ This repository is responsible for creating the Kubernetes infrastructure layer 
 - [Bootstrap Flow](#bootstrap-flow)
 - [Key Files](#key-files)
 - [Deployment Model](#deployment-model)
-- [Engineering Insights & CI Analysis](#engineering-insights--ci-analysis)
+- [Production Thinking: CI, Security & Trade-offs](#production-thinking-ci-security--trade-offs)
 - [What Happens After Bootstrap?](#what-happens-after-bootstrap?)
 - [Quick Start](#quick-start)
 - [Troubleshooting](#troubleshooting)
@@ -188,7 +188,7 @@ As part of the CI pipeline, Terraform code is validated through multiple stages:
 These checks intentionally surface real-world issues that are commonly encountered in production environments.
 
 
-### CI & Security Walkthroughs
+### Production Thinking: CI, Security & Trade-offs
 
 The following videos document actual pipeline runs, including:
 
@@ -197,13 +197,15 @@ The following videos document actual pipeline runs, including:
 * security findings identified by tfsec
 * iterative improvements to reach a production-ready baseline
 
-▶️ **EKS-Infrastructure-Terraform-Format-Check** https://youtu.be/KGTHxcOkwdg
+▶️ **EKS-Infrastructure-Terraform-Format-Check** 
+https://youtu.be/KGTHxcOkwdg
 
 Terraform Formatting Failures
 Cause: inconsistent formatting across Terraform files
 Resolution: enforced terraform fmt -check in CI and standardized formatting across the repository
 
-▶️ **EKS-Infrastructure-TFLint-Check** https://youtu.be/1rYfRzthVTs
+▶️ **EKS-Infrastructure-TFLint-Check** 
+https://youtu.be/1rYfRzthVTs
 
 Issue:
   * Missing required_version and provider version constraints
@@ -215,7 +217,8 @@ Resolution:
   * updated syntax to modern Terraform style
   * removed or refactored unused resources
 
-▶️ **EKS-Infrastructure-Terraform-Plan-Check** https://youtu.be/VCUeJGv07FI
+▶️ **EKS-Infrastructure-Terraform-Plan-Check** 
+https://youtu.be/VCUeJGv07FI
 
 Error: Backend initialization required during terraform plan
 Cause: using remote S3 backend without initializing it in CI
@@ -224,6 +227,13 @@ Resolution:
   * removed terraform plan from PR checks
   * kept backend-independent validation steps
 
+### Note on tfsec Findings
+
+Some tfsec findings shown in the walkthrough are intentionally not fully remediated in this iteration.
+
+The goal of this project is to demonstrate awareness of security issues and the ability to prioritize them, rather than to enforce a fully hardened configuration.
+
+In real-world environments, not all findings are addressed immediately. Decisions are made based on impact, cost, and operational context. This repository reflects that approach by highlighting the findings while deferring certain improvements.
 
 ### Why `terraform plan/apply` is not part of PR checks
 
@@ -262,6 +272,8 @@ the pipeline focuses on:
 In real-world environments, `terraform plan/apply` is typically executed in **controlled deployment pipelines**, not in lightweight validation workflows.
 
 This repository reflects that separation by keeping PR checks lightweight and infrastructure execution isolated.
+
+
 
 
 ### Engineering Approach
