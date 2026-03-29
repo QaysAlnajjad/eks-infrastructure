@@ -229,10 +229,13 @@ Resolution:
 
 ### Note on tfsec Findings
 
-Some tfsec findings shown in the CI walkthrough videos are intentionally not fully remediated in this iteration.
+Some tfsec findings appear during the CI walkthrough videos, including during the Terraform plan stage, and are intentionally not fully remediated in this iteration.
+
 The goal of this project is to demonstrate awareness of security issues and the ability to prioritize them, rather than to enforce a fully hardened configuration.
 
 In real-world environments, not all findings are addressed immediately. Decisions are made based on impact, cost, and operational context. This repository reflects that approach by highlighting the findings while deferring certain improvements.
+
+Example: VPC Flow Logs are not enabled in this setup to demonstrate the trade-off between observability and cost.
 
 ### Why `terraform plan/apply` is not part of PR checks
 
