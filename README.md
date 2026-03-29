@@ -65,7 +65,8 @@ It does **not** own long-lived application manifests such as workloads, monitori
 eks-infrastructure/
 ├── .github/workflows/       # CI workflows for deploy / destroy
 │   ├── deploy-infra.yml
-│   └── destroy-infra.yml
+│   ├── destroy-infra.yml
+|   └── terraform-pr-checks.yml    
 ├── bootstrap/
 │   ├── aws-auth.yaml        # initial cluster access mapping
 │   ├── root-app.yaml        # root ArgoCD application
