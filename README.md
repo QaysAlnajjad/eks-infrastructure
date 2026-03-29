@@ -196,14 +196,51 @@ The following videos document actual pipeline runs, including:
 * security findings identified by tfsec
 * iterative improvements to reach a production-ready baseline
 
-▶️ **EKS-Infrastructure-Terraform-Format-Checks**
+▶️ **EKS-Infrastructure-Terraform-Format-Check**
 (PUT_VIDEO_LINK_HERE)
 
-▶️ **EKS-Infrastructure-TFLint-Checks**
+▶️ **EKS-Infrastructure-TFLint-Check**
 (PUT_VIDEO_LINK_HERE)
 
-▶️ **EKS-Infrastructure-Terraform-Plan-Checks**
+▶️ **EKS-Infrastructure-Terraform-Plan-Check**
 (PUT_VIDEO_LINK_HERE)
+### Why `terraform plan/apply` is not part of PR checks
+
+During early iterations, the CI pipeline included `terraform plan` (and apply-related validation) as part of pull request checks.
+
+However, this step was intentionally removed from the PR workflow.
+
+#### Reason
+
+This project uses a **remote S3 backend** for Terraform state. Running `terraform plan` in CI requires:
+
+  * initialized backend configuration
+  * access to the S3 state bucket
+  * AWS credentials with sufficient permissions
+  * environment-specific variables
+
+Including this in PR checks would tightly couple validation with real infrastructure and introduce unnecessary complexity and potential failure points.
+
+#### Decision
+
+To keep PR checks:
+
+  * fast
+  * deterministic
+  * independent from live infrastructure
+
+the pipeline focuses on:
+
+  * formatting (`terraform fmt`)
+  * validation (`terraform validate`)
+  * linting (`tflint`)
+  * security scanning (`tfsec`)
+
+#### Production Perspective
+
+In real-world environments, `terraform plan/apply` is typically executed in **controlled deployment pipelines**, not in lightweight validation workflows.
+
+This repository reflects that separation by keeping PR checks lightweight and infrastructure execution isolated.
 
 ### Engineering Approach
 
