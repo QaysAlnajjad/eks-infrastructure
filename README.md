@@ -15,6 +15,7 @@ This repository is responsible for creating the Kubernetes infrastructure layer 
 - [Bootstrap Flow](#bootstrap-flow)
 - [Key Files](#key-files)
 - [Deployment Model](#deployment-model)
+- [Engineering Insights & CI Analysis](#engineering-insights-&-ci-analysis)
 - [What Happens After Bootstrap?](#what-happens-after-bootstrap?)
 - [Quick Start](#quick-start)
 - [Troubleshooting](#troubleshooting)
@@ -169,6 +170,48 @@ After a successful infrastructure deployment:
   * ArgoCD starts reconciling eks-gitops-apps
 
 That means this repository is the entry point of the platform lifecycle.
+
+---
+
+## Engineering Insights & CI Analysis
+
+This repository is not only focused on provisioning infrastructure, but also on demonstrating production-style engineering practices.
+
+As part of the CI pipeline, Terraform code is validated through multiple stages:
+
+* formatting checks (`terraform fmt`)
+* validation (`terraform validate`)
+* linting (`tflint`)
+* security scanning (`tfsec`)
+
+These checks intentionally surface real-world issues that are commonly encountered in production environments.
+
+### CI & Security Walkthroughs
+
+The following videos document actual pipeline runs, including:
+
+* formatting failures and corrections
+* linting issues and best practice violations
+* security findings identified by tfsec
+* iterative improvements to reach a production-ready baseline
+
+▶️ **Terraform & CI Validation Walkthrough**
+(PUT_VIDEO_LINK_HERE)
+
+▶️ **Security Analysis (tfsec findings)**
+(PUT_VIDEO_LINK_HERE)
+
+### Engineering Approach
+
+The goal is not to eliminate every warning, but to demonstrate:
+
+* awareness of infrastructure risks
+* prioritization of critical vs non-critical issues
+* ability to iterate towards production-quality infrastructure
+
+Some findings (e.g., flow logs, IAM simplifications, or medium-level issues) are intentionally left visible to reflect realistic decision-making rather than artificially perfect configurations.
+
+This mirrors how real platforms evolve, where not all issues are fixed at once, but are evaluated based on impact and context.
 
 ---
 
@@ -364,48 +407,6 @@ If deployment fails, check the following:
   * kubectl connectivity to the cluster
   * ArgoCD pods status: `kubectl get pods -n argocd`
   * Helm installation logs
-
----
-
-## Engineering Insights & CI Analysis
-
-This repository is not only focused on provisioning infrastructure, but also on demonstrating production-style engineering practices.
-
-As part of the CI pipeline, Terraform code is validated through multiple stages:
-
-* formatting checks (`terraform fmt`)
-* validation (`terraform validate`)
-* linting (`tflint`)
-* security scanning (`tfsec`)
-
-These checks intentionally surface real-world issues that are commonly encountered in production environments.
-
-### CI & Security Walkthroughs
-
-The following videos document actual pipeline runs, including:
-
-* formatting failures and corrections
-* linting issues and best practice violations
-* security findings identified by tfsec
-* iterative improvements to reach a production-ready baseline
-
-▶️ **Terraform & CI Validation Walkthrough**
-(PUT_VIDEO_LINK_HERE)
-
-▶️ **Security Analysis (tfsec findings)**
-(PUT_VIDEO_LINK_HERE)
-
-### Engineering Approach
-
-The goal is not to eliminate every warning, but to demonstrate:
-
-* awareness of infrastructure risks
-* prioritization of critical vs non-critical issues
-* ability to iterate towards production-quality infrastructure
-
-Some findings (e.g., flow logs, IAM simplifications, or medium-level issues) are intentionally left visible to reflect realistic decision-making rather than artificially perfect configurations.
-
-This mirrors how real platforms evolve, where not all issues are fixed at once, but are evaluated based on impact and context.
 
 ---
 
