@@ -197,14 +197,11 @@ The following videos document actual pipeline runs, including:
 * security findings identified by tfsec
 * iterative improvements to reach a production-ready baseline
 
-▶️ **EKS-Infrastructure-Terraform-Format-Check**
-(PUT_VIDEO_LINK_HERE)
+▶️ **EKS-Infrastructure-Terraform-Format-Check** https://youtu.be/KGTHxcOkwdg
 
-▶️ **EKS-Infrastructure-TFLint-Check**
-(PUT_VIDEO_LINK_HERE)
+▶️ **EKS-Infrastructure-TFLint-Check** https://youtu.be/1rYfRzthVTs
 
-▶️ **EKS-Infrastructure-Terraform-Plan-Check**
-(PUT_VIDEO_LINK_HERE)
+▶️ **EKS-Infrastructure-Terraform-Plan-Check** https://youtu.be/VCUeJGv07FI
 
 
 ### Why `terraform plan/apply` is not part of PR checks
