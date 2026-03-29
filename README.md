@@ -187,6 +187,7 @@ As part of the CI pipeline, Terraform code is validated through multiple stages:
 
 These checks intentionally surface real-world issues that are commonly encountered in production environments.
 
+
 ### CI & Security Walkthroughs
 
 The following videos document actual pipeline runs, including:
@@ -204,6 +205,8 @@ The following videos document actual pipeline runs, including:
 
 ▶️ **EKS-Infrastructure-Terraform-Plan-Check**
 (PUT_VIDEO_LINK_HERE)
+
+
 ### Why `terraform plan/apply` is not part of PR checks
 
 During early iterations, the CI pipeline included `terraform plan` (and apply-related validation) as part of pull request checks.
@@ -241,6 +244,7 @@ the pipeline focuses on:
 In real-world environments, `terraform plan/apply` is typically executed in **controlled deployment pipelines**, not in lightweight validation workflows.
 
 This repository reflects that separation by keeping PR checks lightweight and infrastructure execution isolated.
+
 
 ### Engineering Approach
 
