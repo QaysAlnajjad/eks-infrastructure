@@ -196,10 +196,13 @@ The following videos document actual pipeline runs, including:
 * security findings identified by tfsec
 * iterative improvements to reach a production-ready baseline
 
-▶️ **Terraform & CI Validation Walkthrough**
+▶️ **EKS-Infrastructure-Terraform-Format-Checks**
 (PUT_VIDEO_LINK_HERE)
 
-▶️ **Security Analysis (tfsec findings)**
+▶️ **EKS-Infrastructure-TFLint-Checks**
+(PUT_VIDEO_LINK_HERE)
+
+▶️ **EKS-Infrastructure-Terraform-Apply-Checks**
 (PUT_VIDEO_LINK_HERE)
 
 ### Engineering Approach
