@@ -1,0 +1,79 @@
+name: Terraform PR Checks
+
+on:
+  pull_request:
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '.github/workflows/terraform-pr-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-checks:
+    name: Terraform Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform format check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: terraform init -backend=false
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Show TFLint version
+        run: tflint --version
+
+      - name: Initialize TFLint plugins
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint --recursive
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          soft_fail: false
+
+      - name: Terraform plan
+        id: plan
+        run: |
+          set +e
+          terraform plan -no-color -input=false -lock=false -detailed-exitcode -out=tfplan
+          exit_code=$?
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+
+          if [ "$exit_code" -eq 1 ]; then
+            echo "Terraform plan failed"
+            exit 1
+          fi
+
+          if [ "$exit_code" -eq 2 ]; then
+            echo "Terraform plan detected changes"
+          else
+            echo "Terraform plan detected no changes"
+          fi
+
+          exit 0
+
+      - name: Upload terraform plan artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: tfplan
+          if-no-files-found: ignore
