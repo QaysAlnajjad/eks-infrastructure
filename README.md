@@ -203,8 +203,6 @@ Terraform Formatting Failures
 Cause: inconsistent formatting across Terraform files
 Resolution: enforced terraform fmt -check in CI and standardized formatting across the repository
 
------
-
 ▶️ **EKS-Infrastructure-TFLint-Check** https://youtu.be/1rYfRzthVTs
 
 Issue:
@@ -217,8 +215,6 @@ Resolution:
   * updated syntax to modern Terraform style
   * removed or refactored unused resources
 
------
-
 ▶️ **EKS-Infrastructure-Terraform-Plan-Check** https://youtu.be/VCUeJGv07FI
 
 Error: Backend initialization required during terraform plan
@@ -228,7 +224,6 @@ Resolution:
   * removed terraform plan from PR checks
   * kept backend-independent validation steps
 
-----
 
 ### Why `terraform plan/apply` is not part of PR checks
 
