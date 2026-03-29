@@ -38,7 +38,7 @@ resource "aws_iam_role" "ci_infra" {
 }
 
 resource "aws_iam_role_policy_attachment" "ci_infra_admin" {
-  role = aws_iam_role.ci_infra.name
+  role       = aws_iam_role.ci_infra.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
@@ -54,8 +54,8 @@ resource "aws_iam_policy" "eks_cluster_access" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = ["eks:DescribeCluster"]
+        Effect   = "Allow"
+        Action   = ["eks:DescribeCluster"]
         Resource = "*"
       }
     ]

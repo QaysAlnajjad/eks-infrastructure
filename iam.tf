@@ -63,17 +63,17 @@ resource "aws_iam_role" "eks_node_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
-  role = aws_iam_role.eks_node_role.name
+  role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
-  role = aws_iam_role.eks_node_role.name
+  role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_read_only" {
-  role = aws_iam_role.eks_node_role.name
+  role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
@@ -120,27 +120,27 @@ locals {
 resource "aws_iam_role" "alb_controller" {
   name = "eks-alb-controller-role"
   assume_role_policy = jsonencode({
-  Version = "2012-10-17"
-  Statement = [
-    {
-      Effect = "Allow"
-      Principal = {
-        Federated = aws_iam_openid_connect_provider.eks.arn
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      Condition = {
-        StringEquals = {
-          "${local.oidc_provider}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
-          "${local.oidc_provider}:aud" = "sts.amazonaws.com"
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.eks.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${local.oidc_provider}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+            "${local.oidc_provider}:aud" = "sts.amazonaws.com"
+          }
         }
       }
-    }
-  ]
-})
+    ]
+  })
 
 }
 
 resource "aws_iam_role_policy_attachment" "alb_attach" {
-  role = aws_iam_role.alb_controller.name
+  role       = aws_iam_role.alb_controller.name
   policy_arn = aws_iam_policy.alb_controller.arn
 }
