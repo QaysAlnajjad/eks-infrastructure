@@ -48,32 +48,3 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           soft_fail: false
-
-      - name: Terraform plan
-        id: plan
-        run: |
-          set +e
-          terraform plan -no-color -input=false -lock=false -detailed-exitcode -out=tfplan
-          exit_code=$?
-          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
-
-          if [ "$exit_code" -eq 1 ]; then
-            echo "Terraform plan failed"
-            exit 1
-          fi
-
-          if [ "$exit_code" -eq 2 ]; then
-            echo "Terraform plan detected changes"
-          else
-            echo "Terraform plan detected no changes"
-          fi
-
-          exit 0
-
-      - name: Upload terraform plan artifact
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: terraform-plan
-          path: tfplan
-          if-no-files-found: ignore
