@@ -471,8 +471,7 @@ kubectl get applications -n argocd
 ```bash
 aws eks describe-cluster --name <cluster-name> --region <region>
 ```
-			
-```
+
 ---
 
 ### 8. Access ArgoCD
