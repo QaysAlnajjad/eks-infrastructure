@@ -17,7 +17,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/kubernetes-ci-infra-role
+          role-to-assume: arn:aws:iam::127214183643:role/kubernetes-ci-infra-role
           aws-region: us-east-1
 
       - name: Setup Terraform
