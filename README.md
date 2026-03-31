@@ -451,9 +451,13 @@ When deploying locally using the script, kubeconfig is updated automatically.
 ---
 
 ### 7. Verify cluster
-
+```bash
+aws eks update-kubeconfig \
+  --region "$AWS_REGION" \
+  --name "$CLUSTER_NAME"
+  
 kubectl get nodes
-
+```
 ---
 
 ### 8. Access ArgoCD
