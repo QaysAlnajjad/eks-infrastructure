@@ -455,8 +455,23 @@ When deploying locally using the script, kubeconfig is updated automatically.
 aws eks update-kubeconfig \
   --region "$AWS_REGION" \
   --name "$CLUSTER_NAME"
-  
+```
+```bash
 kubectl get nodes
+```
+```bash
+kubectl get ns
+```
+```bash
+kubectl get pods -n argocd
+```
+```bash
+kubectl get applications -n argocd
+```
+```bash
+aws eks describe-cluster --name <cluster-name> --region <region>
+```
+			
 ```
 ---
 
