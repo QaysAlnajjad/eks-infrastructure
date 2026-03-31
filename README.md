@@ -472,6 +472,12 @@ kubectl get applications -n argocd
 aws eks describe-cluster --name <cluster-name> --region <region>
 ```
 
+Expected checks:
+
+  * kubectl get nodes shows Ready worker nodes
+  * ArgoCD pods are running in the argocd namespace
+  * the root ArgoCD application is present
+  * the cluster API is reachable from kubectl
 ---
 
 ### 8. Access ArgoCD
