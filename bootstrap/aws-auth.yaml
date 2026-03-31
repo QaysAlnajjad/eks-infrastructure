@@ -11,7 +11,7 @@ data:
       groups:
         - system:masters
 
-    - rolearn: arn:aws:iam::<AWS_ACCOUNT_ID>:role/eks-node-role
+    - rolearn: arn:aws:iam::127214183643:role/eks-node-role
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers
