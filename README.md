@@ -499,6 +499,8 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
+Username: admin
+Password: (output from command above)
 
 Note: ArgoCD RBAC resources (ServiceAccounts, ClusterRoles, and ClusterRoleBindings) are automatically created by the ArgoCD Helm chart during installation.
 
@@ -513,8 +515,8 @@ Note: ArgoCD RBAC resources (ServiceAccounts, ClusterRoles, and ClusterRoleBindi
 
 Note:
 
-  The `deploy-infra.sh` script also installs the Prometheus Operator CRDs required by the GitOps repository.
-  This is necessary because monitoring resources such as `ServiceMonitor`, `PrometheusRule`, and `AlertmanagerConfig` cannot be reconciled unless their CRDs already exist in the cluster.
+  The bootstrap script automatically installs the Prometheus Operator CRDs before ArgoCD begins reconciling the application layer.
+  This ensures that monitoring resources such as `ServiceMonitor`, `PrometheusRule`, and `AlertmanagerConfig` can be applied successfully without sync failures.
 
 ### Verify Prometheus Operator CRDs
 
