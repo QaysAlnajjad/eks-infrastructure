@@ -152,8 +152,13 @@ Maps initial IAM identities into Kubernetes RBAC so the cluster can be administe
 
 ### scripts/deploy-infra.sh
 
-Helper script used to initialize/apply Terraform, update kubeconfig, install ArgoCD, and create the root application.
-
+Helper script used to:
+  * initialize and apply Terraform
+  * update kubeconfig
+  * apply `aws-auth.yaml`
+  * install ArgoCD
+  * create the root ArgoCD application
+  * install the Prometheus Operator CRDs required by monitoring resources in the GitOps repository
 
 ### scripts/destroy-infra.sh
 
@@ -505,55 +510,10 @@ Note: ArgoCD RBAC resources (ServiceAccounts, ClusterRoles, and ClusterRoleBindi
 * Root application is created
 * Applications from eks-gitops-apps are syncing automatically
 
----
+Note:
 
-### 9. Install required Prometheus Operator CRDs
-
-Before deploying monitoring resources from the GitOps repository, install the Prometheus Operator CRDs required by custom resources such as:
-
-- ServiceMonitor
-- PrometheusRule
-- AlertmanagerConfig
-- Prometheus
-- PodMonitor
-- Probe
-- ThanosRuler
-
-
-Before ArgoCD can successfully reconcile monitoring resources from `eks-gitops-apps`, the Prometheus Operator CRDs must exist in the cluster.
-
-This is required because the GitOps repository defines custom resources such as `ServiceMonitor`, `PrometheusRule`, and `AlertmanagerConfig`. Kubernetes cannot create these resources unless their CRDs are already installed.
-
-Apply the CRDs manually:
-
-```bash
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_probes.yaml
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_prometheusrules.yaml
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
-kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
-```
-Verify installation:
-
-```bash
-kubectl get crds | grep monitoring.coreos.com
-```
-
-### Why these CRDs are applied manually
-
-These CRDs are intentionally applied as a separate manual step instead of being embedded directly into the bootstrap script.
-
-Reasoning:
-
-- they are external operator CRDs, not infrastructure resources owned by this repository
-- installing them explicitly makes the dependency visible before GitOps reconciliation
-- it avoids coupling the infrastructure bootstrap script to upstream CRD URLs and versions
-- it gives operators a clear checkpoint to verify CRD availability before deploying monitoring resources
-- in real environments, cluster-level CRDs are often managed deliberately and separately from application rollout
-
+  The `deploy-infra.sh` script also installs the Prometheus Operator CRDs required by the GitOps repository.
+  This is necessary because monitoring resources such as `ServiceMonitor`, `PrometheusRule`, and `AlertmanagerConfig` cannot be reconciled unless their CRDs already exist in the cluster.
 ---
 
 ## Troubleshooting
