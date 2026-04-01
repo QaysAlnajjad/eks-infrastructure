@@ -430,7 +430,7 @@ chmod +x scripts/deploy-infra.sh
 ./scripts/deploy-infra.sh
 ```
 
-### 5.2. GitHub Actions
+#### 5.2. GitHub Actions
 
 After pushing the project to your GitHub repository, you can use the flow "deploy-infra" to deploy the infrastructure.
 
@@ -483,7 +483,14 @@ Expected checks:
 
 ### 8. Access ArgoCD
 
-```text
+#### 8.1. Get admin password
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+#### 8.2. Forwarding 
+
+```bash
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 
