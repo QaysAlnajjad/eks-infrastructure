@@ -520,6 +520,15 @@ Note:
 ```bash
 kubectl get crds | grep monitoring.coreos.com
 ```
+Expected result:
+
+The cluster should contain the required monitoring CRDs, including:
+```bash
+  servicemonitors.monitoring.coreos.com
+  prometheusrules.monitoring.coreos.com
+  alertmanagerconfigs.monitoring.coreos.com
+  prometheuses.monitoring.coreos.com
+```
 ---
 
 ## Troubleshooting
