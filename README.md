@@ -488,15 +488,16 @@ Expected checks:
 
 ### 8. Access ArgoCD
 
-#### 8.1. Get admin password
-
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-#### 8.2. Forwarding 
+#### 8.1 Port-forward ArgoCD server
 
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+#### 8.2 Retrieve admin password
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
 Note: ArgoCD RBAC resources (ServiceAccounts, ClusterRoles, and ClusterRoleBindings) are automatically created by the ArgoCD Helm chart during installation.
