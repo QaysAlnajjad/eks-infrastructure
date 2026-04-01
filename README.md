@@ -514,6 +514,12 @@ Note:
 
   The `deploy-infra.sh` script also installs the Prometheus Operator CRDs required by the GitOps repository.
   This is necessary because monitoring resources such as `ServiceMonitor`, `PrometheusRule`, and `AlertmanagerConfig` cannot be reconciled unless their CRDs already exist in the cluster.
+
+### Verify Prometheus Operator CRDs
+
+```bash
+kubectl get crds | grep monitoring.coreos.com
+```
 ---
 
 ## Troubleshooting
