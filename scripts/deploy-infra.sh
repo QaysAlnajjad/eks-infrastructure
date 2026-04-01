@@ -44,9 +44,8 @@ helm upgrade --install argocd argo/argo-cd \
   -n argocd \
   --wait
 
-echo "Applying ArgoCD root application..."
-kubectl apply -f bootstrap/root-app.yaml
-
+echo "Installing Prometheus Operator CRDs..."
+# Install CRDs before ArgoCD sync
 kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
 kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
 kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
@@ -56,6 +55,8 @@ kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.c
 kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
 kubectl apply --server-side --force-conflicts -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
 
+echo "Applying ArgoCD root application..."
+kubectl apply -f bootstrap/root-app.yaml
 
 echo "Bootstrap completed successfully."
 echo "Current ArgoCD pods:"
