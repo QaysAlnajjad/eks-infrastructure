@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/QaysAlnajjad/eks-gitops-apps.git
+    repoURL: https://github.com/QaysAlnajjad/EKS-GitOps-Platform-ArgoCD-Kubernetes-Applications.git
     targetRevision: main
     path: apps/
   destination:
